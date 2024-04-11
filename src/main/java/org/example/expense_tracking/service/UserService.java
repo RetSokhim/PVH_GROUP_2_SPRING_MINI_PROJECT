@@ -6,4 +6,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
     UserRegisterResponse createNewUser(UserRegisterRequest userRegisterRequest);
+    void verifyAccount(Integer otpVerify);
+    void resendOtpCode (String email);
 }
