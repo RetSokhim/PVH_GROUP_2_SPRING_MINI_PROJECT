@@ -1,23 +1,18 @@
-package org.example.expense_tracking.model.entity;
+package org.example.expense_tracking.model.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.expense_tracking.model.entity.User;
 
 import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Otps {
-    private Integer otpsId;
+public class OtpsDTO {
     private Integer otpsCode;
     private LocalDateTime issuedAt;
     private LocalDateTime expiration;
     private Integer verify;
-    private User user;
-    public boolean isExpired() {
-        return LocalDateTime.now().isAfter(expiration);
-    }
+    private Integer user;
 }

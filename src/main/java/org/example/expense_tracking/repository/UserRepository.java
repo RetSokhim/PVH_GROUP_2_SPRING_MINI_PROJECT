@@ -20,5 +20,6 @@ public interface UserRepository {
     @Select("""
     SELECT * FROM user_tb WHERE email =#{email}
     """)
+    @ResultMap("userMapping")
     User findUserByEmail(String email);
 }
