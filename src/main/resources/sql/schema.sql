@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS otps_tb(
     otps_code INTEGER ,
     issued_at TIMESTAMP,
     expiration TIMESTAMP,
-    verify INTEGER,
+    verify INTEGER DEFAULT 0,
     user_id INT REFERENCES user_tb(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE TABLE IF NOT EXISTS categories_tb(
@@ -26,5 +26,5 @@ CREATE TABLE IF NOT EXISTS expense_tb(
     category_id INT REFERENCES categories_tb(category_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-UPDATE otps_tb SET verify = 382510 WHERE otps_code = 382510;
-SELECT otps_tb.otps_code FROM otps_tb WHERE verify = 797878
+-- UPDATE otps_tb SET verify = 382510 WHERE otps_code = 382510;
+-- SELECT verify FROM otps_tb WHERE otps_code = 670065

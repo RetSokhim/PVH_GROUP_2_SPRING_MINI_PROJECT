@@ -36,13 +36,11 @@ public class UserServiceImpl implements UserService {
         this.otpsService = otpsService;
         this.otpsRepository = otpsRepository;
     }
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findUserByEmail(email);
         return new CustomUserDetail(user);
     }
-
     @Override
     public UserRegisterResponse createNewUser(UserRegisterRequest userRegisterRequest) {
         OtpsDTO otps = otpsService.generateOtp();
@@ -64,9 +62,25 @@ public class UserServiceImpl implements UserService {
         otpsRepository.insertOtp(otps);
         return mapper.map(user, UserRegisterResponse.class);
     }
-
     @Override
     public void verifyAccount(Integer otpVerify) {
         otpsRepository.confirmVerify(otpVerify);
+    }
+    @Override
+    public void resendOtpCode(String email) {
+        User user = userRepository.findUserByEmail(email);
+        OtpsDTO otps = otpsService.generateOtp();
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom("retsokhim2001@gmail.com");
+            helper.setTo(user.getEmail());
+            helper.setSubject("Here is your OTP to verify");
+            helper.setText(String.valueOf(otps.getOtpsCode()));
+            javaMailSender.send(message);
+        } catch (MailException | MessagingException ex) {
+            System.err.println("Error sending email: " + ex.getMessage());
+        }
+        otpsRepository.updateTheCodeAfterResend(otps,user.getUserId());
     }
 }

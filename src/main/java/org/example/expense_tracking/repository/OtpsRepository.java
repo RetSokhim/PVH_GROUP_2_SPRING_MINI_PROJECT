@@ -20,14 +20,21 @@ public interface OtpsRepository {
     void insertOtp(@Param("user") OtpsDTO otpsDTO);
 
     @Select("""
-    SELECT otps_code FROM otps_tb WHERE verify = #{verify}
+    SELECT * FROM otps_tb WHERE otps_code = #{verify}
     """)
     @ResultMap("otpsMapping")
-    Integer selectOtpCode(Integer verify);
+    Otps selectOtpCode(Integer verify);
 
     @Update("""
     UPDATE otps_tb SET verify = #{verify} WHERE otps_code = #{verify}
     """)
     @ResultMap("otpsMapping")
     void confirmVerify(@Param("verify") Integer verify);
+
+    //For resend code
+    @Update("""
+    UPDATE otps_tb SET otps_code = #{otps.otpsCode},issued_at = #{otps.issuedAt},expiration = #{otps.expiration} WHERE user_id = #{userId}
+    """)
+    @ResultMap("otpsMapping")
+    void updateTheCodeAfterResend (@Param("otps") OtpsDTO otpsDTO,Integer userId);
 }

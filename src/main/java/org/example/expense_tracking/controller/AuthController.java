@@ -18,7 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/v1/auth")
 public class AuthController {
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -40,9 +40,8 @@ public class AuthController {
         userService.verifyAccount(otp);
         return new ResponseEntity<>("Your account is successfully verified",HttpStatus.OK);
     }
-
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@RequestBody UserLoginRequest userLoginRequest) throws Exception {
+    public ResponseEntity<?> login(@RequestBody UserLoginRequest userLoginRequest) throws Exception {
         authenticate(userLoginRequest.getEmail(), userLoginRequest.getPassword());
         final UserDetails userDetails = userService.loadUserByUsername(userLoginRequest.getEmail());
         final String token = jwtService.generateToken(userDetails);
@@ -51,13 +50,20 @@ public class AuthController {
     }
     private void authenticate(String email, String password) throws Exception {
         try {
-            UserDetails userApp = userService.loadUserByUsername(email);
-            if (userApp == null){throw new BadRequestException("Wrong Email");}
-            if (!passwordEncoder.matches(password, userApp.getPassword())){
+            UserDetails user = userService.loadUserByUsername(email);
+            if (!user.isAccountNonLocked()) {
+                throw new Exception("Account not verified. Please verify your account first.");
+            }
+            if (!passwordEncoder.matches(password, user.getPassword())){
                 throw new BadRequestException("Wrong Password");}
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         } catch (DisabledException e) {
             throw new Exception("USER_DISABLED", e);} catch (BadCredentialsException e) {
             throw new Exception("INVALID_CREDENTIALS", e);}
+    }
+    @PostMapping("/resend")
+    public ResponseEntity<?> resendOtpCode (@RequestParam String email){
+        userService.resendOtpCode(email);
+        return new ResponseEntity<>("your code has already resent",HttpStatus.OK);
     }
 }

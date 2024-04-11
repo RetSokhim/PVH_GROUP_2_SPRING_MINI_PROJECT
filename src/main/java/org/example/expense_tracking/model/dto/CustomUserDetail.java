@@ -8,17 +8,18 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
+
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class CustomUserDetail implements UserDetails {
 
     private User user;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.singletonList(()-> "ROLE_USER");
     }
-
     @Override
     public String getPassword() {
         return user.getPassword();
