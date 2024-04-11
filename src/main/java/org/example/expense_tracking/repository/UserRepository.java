@@ -22,4 +22,10 @@ public interface UserRepository {
     """)
     @ResultMap("userMapping")
     User findUserByEmail(String email);
+
+    @Select("""
+    SELECT * FROM user_tb WHERE user_id = #{id}
+    """)
+    @ResultMap("userMapping")
+    User findUserById(Integer id);
 }
