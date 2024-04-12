@@ -23,9 +23,9 @@ public interface CategoryRepository {
 
     @Select("""
     SELECT * FROM categories_tb
-    WHERE  category_id = #{id}
+    WHERE category_id = #{id}
              """)
-    @ResultMap("categoryMapping")
+    @ResultMap("category")
     Category getCategoryById(Integer id);
 
 

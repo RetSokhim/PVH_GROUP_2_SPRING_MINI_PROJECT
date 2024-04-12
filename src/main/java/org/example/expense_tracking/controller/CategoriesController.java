@@ -35,12 +35,12 @@ public class CategoriesController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/getCategoryById/{Id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable Integer id) {
-        Category category = categoryService.getCategoryById(id);
+        CategoryRespond category = categoryService.getCategoryById(id);
         ApiResponse<?> apiResponse = new ApiResponse<>(
                 "Get Category By ID",
-                categoryService.getAllCategories(),
+                categoryService.getCategoryById(id),
                 LocalDateTime.now(),
                 201,
                 HttpStatus.OK);

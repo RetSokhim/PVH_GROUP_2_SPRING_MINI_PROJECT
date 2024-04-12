@@ -32,8 +32,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category getCategoryById(Integer id) {
-        return null;
+    public CategoryRespond getCategoryById(Integer id) {
+        Category category = categoryRepository.getCategoryById(id);
+        return modelMapper.map(category,CategoryRespond.class);
     }
 
 }
