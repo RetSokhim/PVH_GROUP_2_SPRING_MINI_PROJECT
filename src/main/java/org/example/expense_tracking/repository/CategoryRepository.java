@@ -8,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface CategoryRepository {
     @Select("""
-    SELECT * FROM categories_tb;
+    SELECT * FROM categories_tb WHERE user_id = #{userId};
     """)
     @Results(id = "category",value = {
             @Result(property = "categoryId",column = "category_id"),
@@ -18,7 +18,7 @@ public interface CategoryRepository {
             one = @One(select = "org.example.expense_tracking.repository.UserRepository.findUserById")
             )
     })
-    List<Category> getAllCategories();
+    List<Category> getAllCategories(Integer userId);
 
 
 }
