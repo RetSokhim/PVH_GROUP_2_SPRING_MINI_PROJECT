@@ -1,10 +1,9 @@
 package org.example.expense_tracking.service;
 
-import org.example.expense_tracking.model.dto.response.CategoryRespond;
-import org.example.expense_tracking.model.entity.Category;
+import org.example.expense_tracking.model.dto.response.CategoryResponse;
 
 import java.util.List;
 
 public interface CategoryService {
-    List<CategoryRespond> getAllCategories();
+    List<CategoryResponse> getAllCategories();
 }

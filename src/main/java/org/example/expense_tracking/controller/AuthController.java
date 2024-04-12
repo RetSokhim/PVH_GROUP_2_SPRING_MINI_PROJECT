@@ -5,7 +5,7 @@ import org.example.expense_tracking.model.dto.CustomUserDetail;
 import org.example.expense_tracking.model.dto.request.UserLoginRequest;
 import org.example.expense_tracking.model.dto.request.UserPasswordRequest;
 import org.example.expense_tracking.model.dto.request.UserRegisterRequest;
-import org.example.expense_tracking.model.dto.response.UserLoginTokenRespond;
+import org.example.expense_tracking.model.dto.response.UserLoginTokenResponse;
 import org.example.expense_tracking.model.dto.response.UserRegisterResponse;
 import org.example.expense_tracking.model.entity.Otps;
 import org.example.expense_tracking.model.entity.User;
@@ -58,7 +58,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please verify your account first");
         }
         final String token = jwtService.generateToken(userDetails);
-        UserLoginTokenRespond authResponse = new UserLoginTokenRespond(token);
+        UserLoginTokenResponse authResponse = new UserLoginTokenResponse(token);
         return ResponseEntity.ok(authResponse);
     }
     private void authenticate(String email, String password) throws Exception {

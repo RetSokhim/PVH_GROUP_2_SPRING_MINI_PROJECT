@@ -1,7 +1,6 @@
 package org.example.expense_tracking.repository;
 
 import org.apache.ibatis.annotations.*;
-import org.example.expense_tracking.model.dto.response.CategoryRespond;
 import org.example.expense_tracking.model.entity.Category;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package org.example.expense_tracking.service.serviceimplement;
 
-import org.example.expense_tracking.model.dto.response.CategoryRespond;
+import org.example.expense_tracking.model.dto.response.CategoryResponse;
 import org.example.expense_tracking.model.entity.Category;
 import org.example.expense_tracking.repository.CategoryRepository;
 import org.example.expense_tracking.service.CategoryService;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -21,14 +20,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryRespond> getAllCategories() {
+    public List<CategoryResponse> getAllCategories() {
         List<Category> categories = categoryRepository.getAllCategories();
-        List<CategoryRespond> categoryResponds = new ArrayList<>();
+        List<CategoryResponse> categoryResponses = new ArrayList<>();
         for (Category category : categories) {
-            CategoryRespond categoryRespond = modelMapper.map(category, CategoryRespond.class);
-            categoryResponds.add(categoryRespond);
+            CategoryResponse categoryResponse = modelMapper.map(category, CategoryResponse.class);
+            categoryResponses.add(categoryResponse);
         }
-        return categoryResponds;
+        return categoryResponses;
     }
 
 }
