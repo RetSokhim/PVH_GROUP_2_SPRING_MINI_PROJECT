@@ -3,6 +3,7 @@ package org.example.expense_tracking.controller;
 import org.apache.coyote.BadRequestException;
 import org.example.expense_tracking.model.dto.CustomUserDetail;
 import org.example.expense_tracking.model.dto.request.UserLoginRequest;
+import org.example.expense_tracking.model.dto.request.UserPasswordRequest;
 import org.example.expense_tracking.model.dto.request.UserRegisterRequest;
 import org.example.expense_tracking.model.dto.response.UserLoginTokenRespond;
 import org.example.expense_tracking.model.dto.response.UserRegisterResponse;
@@ -74,5 +75,10 @@ public class AuthController {
     public ResponseEntity<?> resendOtpCode (@RequestParam String email){
         userService.resendOtpCode(email);
         return new ResponseEntity<>("your code has already resent",HttpStatus.OK);
+    }
+    @PutMapping("/forget")
+    public ResponseEntity<?> forgetPassword (@RequestBody UserPasswordRequest userPasswordRequest,@RequestParam String email){
+        userService.resetPassword(userPasswordRequest,email);
+        return new ResponseEntity<>("You're password has been successfully reset",HttpStatus.OK);
     }
 }

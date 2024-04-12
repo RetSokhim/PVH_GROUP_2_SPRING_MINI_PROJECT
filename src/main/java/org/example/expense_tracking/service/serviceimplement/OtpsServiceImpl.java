@@ -30,7 +30,7 @@ public class OtpsServiceImpl implements OtpsService {
         otps.setIssuedAt(Timestamp.valueOf(LocalDateTime.now()));
         Integer sentOtp = Integer.parseInt(otp);
         otps.setOtpsCode(sentOtp);
-        otps.setExpiration(Timestamp.valueOf(LocalDateTime.now().plusMinutes(5)));
+        otps.setExpiration(Timestamp.valueOf(LocalDateTime.now().plusMinutes(1)));
         return otps;
     }
 

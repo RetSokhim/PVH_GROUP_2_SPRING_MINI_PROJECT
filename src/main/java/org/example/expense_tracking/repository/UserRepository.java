@@ -1,6 +1,7 @@
 package org.example.expense_tracking.repository;
 
 import org.apache.ibatis.annotations.*;
+import org.example.expense_tracking.model.dto.request.UserPasswordRequest;
 import org.example.expense_tracking.model.dto.request.UserRegisterRequest;
 import org.example.expense_tracking.model.entity.User;
 
@@ -28,4 +29,9 @@ public interface UserRepository {
     """)
     @ResultMap("userMapping")
     User findUserById(Integer id);
+
+    @Update("""
+    UPDATE user_tb SET password = #{user.password} WHERE email = #{email}
+    """)
+    void resetPassword(@Param("user") UserPasswordRequest userPasswordRequest, String email);
 }

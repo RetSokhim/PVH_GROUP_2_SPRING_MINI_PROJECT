@@ -3,6 +3,7 @@ package org.example.expense_tracking.service.serviceimplement;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.example.expense_tracking.model.dto.request.OtpsRequest;
+import org.example.expense_tracking.model.dto.request.UserPasswordRequest;
 import org.example.expense_tracking.model.dto.request.UserRegisterRequest;
 import org.example.expense_tracking.model.dto.response.UserRegisterResponse;
 import org.example.expense_tracking.model.dto.CustomUserDetail;
@@ -18,6 +19,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.time.Duration;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -63,10 +67,12 @@ public class UserServiceImpl implements UserService {
         return mapper.map(user, UserRegisterResponse.class);
     }
 
-    //Fix this
     public void verifyAccount(Integer otpVerify) {
         Otps otps = otpsRepository.getOtpsByCode(otpVerify);
         if (otps != null) {
+            if (otps.getExpiration().before(new Timestamp(System.currentTimeMillis()))) {
+                throw new IllegalArgumentException("OTP has expired.");
+            }
             if (otps.getVerify() == 0) {
                 otpsRepository.confirmVerify(otpVerify);
                 System.out.println("Account verified successfully.");
@@ -93,5 +99,14 @@ public class UserServiceImpl implements UserService {
             System.err.println("Error sending email: " + ex.getMessage());
         }
         otpsRepository.updateTheCodeAfterResend(otps,user.getUserId());
+    }
+
+    @Override
+    public void resetPassword(UserPasswordRequest userPasswordRequest,String email) {
+        if(userRepository.findUserByEmail(email) != null){
+            String passwordEncode = bCryptPasswordEncoder.encode(userPasswordRequest.getPassword());
+            userPasswordRequest.setPassword(passwordEncode);
+            userRepository.resetPassword(userPasswordRequest,email);
+        }
     }
 }
