@@ -2,6 +2,9 @@ package org.example.expense_tracking.service.serviceimplement;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.example.expense_tracking.exception.AccountVerificationException;
+import org.example.expense_tracking.exception.OTPExpiredException;
+import org.example.expense_tracking.exception.PasswordException;
 import org.example.expense_tracking.model.dto.request.OtpsRequest;
 import org.example.expense_tracking.model.dto.request.UserPasswordRequest;
 import org.example.expense_tracking.model.dto.request.UserRegisterRequest;
@@ -19,9 +22,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
-import java.time.Duration;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -46,7 +47,10 @@ public class UserServiceImpl implements UserService {
         return new CustomUserDetail(user);
     }
     @Override
-    public UserRegisterResponse createNewUser(UserRegisterRequest userRegisterRequest) {
+    public UserRegisterResponse createNewUser(UserRegisterRequest userRegisterRequest) throws PasswordException {
+        if(!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())){
+            throw new PasswordException("Your password is not match with confirm password");
+        }
         OtpsRequest otps = otpsService.generateOtp();
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -67,20 +71,19 @@ public class UserServiceImpl implements UserService {
         return mapper.map(user, UserRegisterResponse.class);
     }
 
-    public void verifyAccount(Integer otpVerify) {
+    public void verifyAccount(Integer otpVerify) throws OTPExpiredException, AccountVerificationException {
         Otps otps = otpsRepository.getOtpsByCode(otpVerify);
         if (otps != null) {
             if (otps.getExpiration().before(new Timestamp(System.currentTimeMillis()))) {
-                throw new IllegalArgumentException("OTP has expired.");
+                throw new OTPExpiredException("OTP has expired.");
             }
             if (otps.getVerify() == 0) {
                 otpsRepository.confirmVerify(otpVerify);
-                System.out.println("Account verified successfully.");
             } else {
-                System.out.println("Account is already verified.");
+               throw new AccountVerificationException("Your account has already been verified");
             }
         } else {
-            throw new IllegalArgumentException("Invalid OTP code");
+            throw new OTPExpiredException("Invalid OTP code");
         }
     }
     @Override
@@ -102,7 +105,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void resetPassword(UserPasswordRequest userPasswordRequest,String email) {
+    public void resetPassword(UserPasswordRequest userPasswordRequest,String email) throws PasswordException {
+        if(!userPasswordRequest.getPassword().equals(userPasswordRequest.getConfirmPassword())){
+            throw new PasswordException("Your password is not match with confirm password");
+        }
         if(userRepository.findUserByEmail(email) != null){
             String passwordEncode = bCryptPasswordEncoder.encode(userPasswordRequest.getPassword());
             userPasswordRequest.setPassword(passwordEncode);

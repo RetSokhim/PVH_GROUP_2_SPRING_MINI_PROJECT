@@ -1,6 +1,8 @@
 package org.example.expense_tracking.controller;
 
-import org.apache.coyote.BadRequestException;
+import org.example.expense_tracking.exception.AccountVerificationException;
+import org.example.expense_tracking.exception.OTPExpiredException;
+import org.example.expense_tracking.exception.PasswordException;
 import org.example.expense_tracking.model.dto.CustomUserDetail;
 import org.example.expense_tracking.model.dto.request.UserLoginRequest;
 import org.example.expense_tracking.model.dto.request.UserPasswordRequest;
@@ -38,12 +40,12 @@ public class AuthController {
         this.otpsRepository = otpsRepository;
     }
     @PostMapping("/register")
-    public ResponseEntity<?> register (@RequestBody UserRegisterRequest userRegisterRequest){
+    public ResponseEntity<?> register (@RequestBody UserRegisterRequest userRegisterRequest) throws PasswordException {
         UserRegisterResponse authRegister = userService.createNewUser(userRegisterRequest);
         return new ResponseEntity<>(authRegister,HttpStatus.CREATED);
     }
     @PutMapping("/verify")
-    public ResponseEntity<?> verify(@RequestParam Integer otp){
+    public ResponseEntity<?> verify(@RequestParam Integer otp) throws AccountVerificationException, OTPExpiredException {
         userService.verifyAccount(otp);
         return new ResponseEntity<>("Your account is successfully verified",HttpStatus.OK);
     }
@@ -55,7 +57,7 @@ public class AuthController {
         Integer userId = user.getUserId();
         Otps otps = otpsRepository.getOtpsUserId(userId);
         if (otps == null || otps.getVerify() == 0) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please verify your account first");
+            throw new AccountVerificationException("Please verify your account first");
         }
         final String token = jwtService.generateToken(userDetails);
         UserLoginTokenResponse authResponse = new UserLoginTokenResponse(token);
@@ -65,7 +67,8 @@ public class AuthController {
         try {
             UserDetails user = userService.loadUserByUsername(email);
             if (!passwordEncoder.matches(password, user.getPassword())){
-                throw new BadRequestException("Wrong Password");}
+                throw new PasswordException("Your password is incorrect please try again");
+            }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         } catch (DisabledException e) {
             throw new Exception("USER_DISABLED", e);} catch (BadCredentialsException e) {
@@ -74,11 +77,11 @@ public class AuthController {
     @PostMapping("/resend")
     public ResponseEntity<?> resendOtpCode (@RequestParam String email){
         userService.resendOtpCode(email);
-        return new ResponseEntity<>("your code has already resent",HttpStatus.OK);
+        return new ResponseEntity<>("Your new verification code has already resent",HttpStatus.OK);
     }
     @PutMapping("/forget")
-    public ResponseEntity<?> forgetPassword (@RequestBody UserPasswordRequest userPasswordRequest,@RequestParam String email){
+    public ResponseEntity<?> forgetPassword (@RequestBody UserPasswordRequest userPasswordRequest,@RequestParam String email) throws PasswordException {
         userService.resetPassword(userPasswordRequest,email);
-        return new ResponseEntity<>("You're password has been successfully reset",HttpStatus.OK);
+        return new ResponseEntity<>("Your password has been successfully reset",HttpStatus.OK);
     }
 }
