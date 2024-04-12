@@ -1,19 +1,20 @@
-package org.example.expense_tracking.model.entity;
+package org.example.expense_tracking.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.expense_tracking.model.entity.Category;
+import org.example.expense_tracking.model.entity.User;
 
 import java.time.LocalDateTime;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Expense {
-    private Integer expenseId;
+@Data
+public class ExpenseDto {
     private Integer amount;
     private String description;
     private LocalDateTime date;
     private User user;
-    private Category category;
+    private Category categoryId;
 }
