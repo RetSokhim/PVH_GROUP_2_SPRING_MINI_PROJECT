@@ -1,10 +1,14 @@
 package org.example.expense_tracking.controller;
 
 import org.apache.coyote.BadRequestException;
+import org.example.expense_tracking.model.dto.CustomUserDetail;
 import org.example.expense_tracking.model.dto.request.UserLoginRequest;
 import org.example.expense_tracking.model.dto.request.UserRegisterRequest;
 import org.example.expense_tracking.model.dto.response.UserLoginTokenRespond;
 import org.example.expense_tracking.model.dto.response.UserRegisterResponse;
+import org.example.expense_tracking.model.entity.Otps;
+import org.example.expense_tracking.model.entity.User;
+import org.example.expense_tracking.repository.OtpsRepository;
 import org.example.expense_tracking.security.JwtService;
 import org.example.expense_tracking.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -24,11 +28,13 @@ public class AuthController {
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    public AuthController(UserService userService, BCryptPasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
+    private final OtpsRepository otpsRepository;
+    public AuthController(UserService userService, BCryptPasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService, OtpsRepository otpsRepository) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.otpsRepository = otpsRepository;
     }
     @PostMapping("/register")
     public ResponseEntity<?> register (@RequestBody UserRegisterRequest userRegisterRequest){
@@ -44,6 +50,12 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody UserLoginRequest userLoginRequest) throws Exception {
         authenticate(userLoginRequest.getEmail(), userLoginRequest.getPassword());
         final UserDetails userDetails = userService.loadUserByUsername(userLoginRequest.getEmail());
+        User user = ((CustomUserDetail) userDetails).getUser();
+        Integer userId = user.getUserId();
+        Otps otps = otpsRepository.getOtpsUserId(userId);
+        if (otps == null || otps.getVerify() == 0) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please verify your account first");
+        }
         final String token = jwtService.generateToken(userDetails);
         UserLoginTokenRespond authResponse = new UserLoginTokenRespond(token);
         return ResponseEntity.ok(authResponse);
@@ -51,9 +63,6 @@ public class AuthController {
     private void authenticate(String email, String password) throws Exception {
         try {
             UserDetails user = userService.loadUserByUsername(email);
-            if (!user.isAccountNonLocked()) {
-                throw new Exception("Account not verified. Please verify your account first.");
-            }
             if (!passwordEncoder.matches(password, user.getPassword())){
                 throw new BadRequestException("Wrong Password");}
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));

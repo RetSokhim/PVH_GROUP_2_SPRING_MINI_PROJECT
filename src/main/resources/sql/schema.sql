@@ -27,4 +27,4 @@ CREATE TABLE IF NOT EXISTS expense_tb(
 );
 
 -- UPDATE otps_tb SET verify = 382510 WHERE otps_code = 382510;
--- SELECT verify FROM otps_tb WHERE otps_code = 670065
+SELECT * FROM otps_tb WHERE otps_code = 910061

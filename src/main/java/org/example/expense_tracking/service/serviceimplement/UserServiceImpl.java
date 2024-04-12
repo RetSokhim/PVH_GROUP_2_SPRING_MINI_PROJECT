@@ -2,10 +2,11 @@ package org.example.expense_tracking.service.serviceimplement;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.example.expense_tracking.model.dto.request.OtpsDTO;
+import org.example.expense_tracking.model.dto.request.OtpsRequest;
 import org.example.expense_tracking.model.dto.request.UserRegisterRequest;
 import org.example.expense_tracking.model.dto.response.UserRegisterResponse;
 import org.example.expense_tracking.model.dto.CustomUserDetail;
+import org.example.expense_tracking.model.entity.Otps;
 import org.example.expense_tracking.model.entity.User;
 import org.example.expense_tracking.repository.OtpsRepository;
 import org.example.expense_tracking.repository.UserRepository;
@@ -15,7 +16,6 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,13 +37,13 @@ public class UserServiceImpl implements UserService {
         this.otpsRepository = otpsRepository;
     }
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email){
         User user = userRepository.findUserByEmail(email);
         return new CustomUserDetail(user);
     }
     @Override
     public UserRegisterResponse createNewUser(UserRegisterRequest userRegisterRequest) {
-        OtpsDTO otps = otpsService.generateOtp();
+        OtpsRequest otps = otpsService.generateOtp();
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -62,14 +62,25 @@ public class UserServiceImpl implements UserService {
         otpsRepository.insertOtp(otps);
         return mapper.map(user, UserRegisterResponse.class);
     }
-    @Override
+
+    //Fix this
     public void verifyAccount(Integer otpVerify) {
-        otpsRepository.confirmVerify(otpVerify);
+        Otps otps = otpsRepository.getOtpsByCode(otpVerify);
+        if (otps != null) {
+            if (otps.getVerify() == 0) {
+                otpsRepository.confirmVerify(otpVerify);
+                System.out.println("Account verified successfully.");
+            } else {
+                System.out.println("Account is already verified.");
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid OTP code");
+        }
     }
     @Override
     public void resendOtpCode(String email) {
         User user = userRepository.findUserByEmail(email);
-        OtpsDTO otps = otpsService.generateOtp();
+        OtpsRequest otps = otpsService.generateOtp();
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);

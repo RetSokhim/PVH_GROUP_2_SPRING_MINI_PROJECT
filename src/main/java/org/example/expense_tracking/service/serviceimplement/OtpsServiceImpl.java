@@ -1,12 +1,12 @@
 package org.example.expense_tracking.service.serviceimplement;
 
-import org.example.expense_tracking.model.dto.request.OtpsDTO;
+import org.example.expense_tracking.model.dto.request.OtpsRequest;
 import org.example.expense_tracking.model.entity.Otps;
 import org.example.expense_tracking.repository.OtpsRepository;
 import org.example.expense_tracking.service.OtpsService;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -19,18 +19,23 @@ public class OtpsServiceImpl implements OtpsService {
 
     //generate OTP
     @Override
-    public OtpsDTO generateOtp() {
-        OtpsDTO otps = new OtpsDTO();
+    public OtpsRequest generateOtp() {
+        OtpsRequest otps = new OtpsRequest();
         Random random = new Random();
         int randomNum = random.nextInt(999999);
         String otp = Integer.toString(randomNum);
         while (otp.length() < 6){
             otp = "0" + otp;
         }
-        otps.setIssuedAt(LocalDateTime.now());
+        otps.setIssuedAt(Timestamp.valueOf(LocalDateTime.now()));
         Integer sentOtp = Integer.parseInt(otp);
         otps.setOtpsCode(sentOtp);
-        otps.setExpiration(LocalDateTime.now().plusMinutes(5));
+        otps.setExpiration(Timestamp.valueOf(LocalDateTime.now().plusMinutes(5)));
         return otps;
+    }
+
+    @Override
+    public Otps getOtpByUserId(Integer userId) {
+        return otpsRepository.getOtpsUserId(userId);
     }
 }
