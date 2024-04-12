@@ -7,7 +7,8 @@ import org.example.expense_tracking.model.entity.Otps;
 @Mapper
 public interface OtpsRepository {
     @Select("""
-    INSERT INTO otps_tb(otps_code, issued_at, expiration, verify, user_id) VALUES (#{user.otpsCode},#{user.issuedAt},#{user.expiration},#{user.verify},#{user.user});
+    INSERT INTO otps_tb(otps_code, issued_at, expiration, verify, user_id)
+    VALUES (#{user.otpsCode},#{user.issuedAt},#{user.expiration},#{user.verify},#{user.user});
     """)
     @Results(id = "otpsMapping",value = {
             @Result(property = "otpsId",column = "otps_id"),

@@ -1,20 +1,14 @@
 package org.example.expense_tracking.controller;
-import jakarta.validation.constraints.Positive;
+
+import org.example.expense_tracking.model.dto.request.CategoryDTO;
 import org.example.expense_tracking.model.dto.response.ApiResponse;
-import org.example.expense_tracking.model.dto.response.CategoryRespond;
 import org.example.expense_tracking.model.entity.Category;
 import org.example.expense_tracking.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-
 @RestController
 @RequestMapping("v1/category")
 public class CategoriesController {
@@ -25,25 +19,60 @@ public class CategoriesController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAllCategory() {
+    public ResponseEntity<?> getAllCategory(@RequestParam(defaultValue = "1") Integer page,
+                                            @RequestParam(defaultValue = "2") Integer size) {
         ApiResponse<?> apiResponse = new ApiResponse<>(
                 "Get All Category",
-                categoryService.getAllCategories(),
+                categoryService.getAllCategories(page, size),
                 LocalDateTime.now(),
                 201,
                 HttpStatus.OK);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/getCategoryById/{Id}")
+    @GetMapping("/getCategoryById/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable Integer id) {
-        Category category = categoryService.getCategoryById(id);
         ApiResponse<?> apiResponse = new ApiResponse<>(
                 "Get Category By ID",
-                categoryService.getAllCategories(),
+                categoryService.getCategoryById(id),
+                LocalDateTime.now(),
+                201,
+                HttpStatus.OK);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/insertNewCategory")
+    public ResponseEntity<?> insertNewCategory(@RequestBody CategoryDTO categoryDTO) {
+        ApiResponse<?> apiResponse = new ApiResponse<>(
+                "Insert was Successful",
+                categoryService.insertNewCategory(categoryDTO),
+                LocalDateTime.now(),
+                201,
+                HttpStatus.OK);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/UpdateCategoryById/{id}")
+    public ResponseEntity<?> updateCategoryById(@PathVariable Integer id, @RequestBody CategoryDTO categoryDTO) {
+        ApiResponse<?> apiResponse = new ApiResponse<>(
+                    "Update Category By ID",
+                    categoryService.updateCategoryById(id,categoryDTO),
+                    LocalDateTime.now(),
+                    201,
+                    HttpStatus.OK);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        }
+
+    //DeleteCategoryById
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> deleteCategoryById(@PathVariable Integer id){
+        ApiResponse<?> apiResponse = new ApiResponse<>(
+                "Delete Category Was Successful",
+                categoryService.deleteCategoryById(id),
                 LocalDateTime.now(),
                 201,
                 HttpStatus.OK);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }
+

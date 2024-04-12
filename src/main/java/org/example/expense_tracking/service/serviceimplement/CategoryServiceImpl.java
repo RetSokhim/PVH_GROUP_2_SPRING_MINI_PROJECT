@@ -1,5 +1,6 @@
 package org.example.expense_tracking.service.serviceimplement;
 
+import org.example.expense_tracking.model.dto.request.CategoryDTO;
 import org.example.expense_tracking.model.dto.response.CategoryRespond;
 import org.example.expense_tracking.model.entity.Category;
 import org.example.expense_tracking.repository.CategoryRepository;
@@ -9,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
@@ -21,7 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryRespond> getAllCategories() {
+    public List<CategoryRespond> getAllCategories(Integer page, Integer siz) {
         List<Category> categories = categoryRepository.getAllCategories();
         List<CategoryRespond> categoryResponds = new ArrayList<>();
         for (Category category : categories) {
@@ -33,7 +32,24 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category getCategoryById(Integer id) {
-        return null;
+        return categoryRepository.getCategoryById(id);
     }
+
+    @Override
+    public Category insertNewCategory(CategoryDTO categoryDTO) {
+        return categoryRepository.insertNewCategory(categoryDTO);
+    }
+
+
+    @Override
+    public Category deleteCategoryById(Integer id) {
+        return categoryRepository.deleteCategoryById(id);
+    }
+
+    @Override
+    public Category updateCategoryById(Integer id, CategoryDTO categoryDTO) {
+        return categoryRepository.updateCategoryById(id,categoryDTO);
+    }
+
 
 }
