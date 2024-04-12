@@ -2,7 +2,6 @@ package org.example.expense_tracking.controller;
 
 import org.example.expense_tracking.model.dto.request.CategoryDTO;
 import org.example.expense_tracking.model.dto.response.ApiResponse;
-import org.example.expense_tracking.model.entity.Category;
 import org.example.expense_tracking.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
