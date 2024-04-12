@@ -21,5 +21,13 @@ public interface CategoryRepository {
     })
     List<Category> getAllCategories();
 
+    @Select("""
+    SELECT * FROM categories_tb
+    WHERE  category_id = #{id}
+             """)
+    @ResultMap("categoryMapping")
+    Category getCategoryById(Integer id);
+
+
 
 }

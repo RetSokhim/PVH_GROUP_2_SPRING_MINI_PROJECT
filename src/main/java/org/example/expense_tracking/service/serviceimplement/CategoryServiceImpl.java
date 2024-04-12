@@ -31,4 +31,9 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryResponds;
     }
 
+    @Override
+    public Category getCategoryById(Integer id) {
+        return null;
+    }
+
 }
