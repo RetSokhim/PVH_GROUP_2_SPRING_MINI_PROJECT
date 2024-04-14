@@ -49,12 +49,11 @@ public class UserServiceImpl implements UserService {
             throw new PasswordException("Your password is not match with confirm password");
         }
         OtpsRequest otps = otpsService.generateOtp();
-//        emailService.sendEmailOtp(userRegisterRequest.getEmail(), String.valueOf(otps.getOtpsCode()));
         Context context = new Context();
-        context.setVariable("message",String.valueOf(otps.getOtpsCode()));
+        context.setVariable("message", String.valueOf(otps.getOtpsCode()));
         emailService.sendEmailWithHtmlTemplate(userRegisterRequest.getEmail(),
                 "Here is your OTP code to verify",
-                "email-template",context);
+                "email-template", context);
         String password = bCryptPasswordEncoder.encode(userRegisterRequest.getPassword());
         userRegisterRequest.setPassword(password);
         User user = userRepository.createNewUser(userRegisterRequest);
@@ -82,15 +81,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void resendOtpCode(String email) throws SearchNotFoundException {
         User user = userRepository.findUserByEmail(email);
-        if(user == null){
+        if (user == null) {
             throw new SearchNotFoundException("Cannot find your email account please register first");
         }
         OtpsRequest otps = otpsService.generateOtp();
         Context context = new Context();
-        context.setVariable("message",String.valueOf(otps.getOtpsCode()));
+        context.setVariable("message", String.valueOf(otps.getOtpsCode()));
         emailService.sendEmailWithHtmlTemplate(email,
                 "Here is your OTP code to verify",
-                "email-template",context);
+                "email-template", context);
         otpsService.updateTheCodeAfterResend(otps, user.getUserId());
     }
 
