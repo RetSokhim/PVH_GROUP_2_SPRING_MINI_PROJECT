@@ -1,4 +1,4 @@
-package org.example.expense_tracking.model.entity;
+package org.example.expense_tracking.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,11 +10,11 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Expense {
+public class ExpenseResponse {
     private UUID expenseId;
     private Integer amount;
     private String description;
     private LocalDateTime date;
-    private User user;
-    private Category category;
+    private UserRegisterResponse user;
+    private CategoryExpenseResponse category;
 }

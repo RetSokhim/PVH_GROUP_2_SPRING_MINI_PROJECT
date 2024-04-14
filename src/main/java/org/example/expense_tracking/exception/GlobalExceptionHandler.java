@@ -8,7 +8,9 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
+import java.net.URI;
 import java.nio.channels.AcceptPendingException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -100,6 +102,24 @@ public class GlobalExceptionHandler {
                 e.getMessage());
         problemDetail.setTitle("FORBIDDEN");
         problemDetail.setProperty("Time Stamp",LocalDateTime.now());
+        return problemDetail;
+    }
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ProblemDetail methodValidationExceptionHandler(HandlerMethodValidationException exception) {
+        HashMap<String, String> errors = new HashMap<>();
+        for (var parameterError : exception.getAllValidationResults()) {
+            final String parameterName = parameterError.getMethodParameter().getParameterName();
+            for (var error : parameterError.getResolvableErrors()) {
+                errors.put(parameterName, error.getDefaultMessage());
+            }
+        }
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+                "Validation field");
+        problemDetail.setTitle("BAD_REQUEST");
+        problemDetail.setStatus(403);
+        problemDetail.setProperty("errors", LocalDateTime.now());
+        problemDetail.setProperty("errors", errors);
         return problemDetail;
     }
 

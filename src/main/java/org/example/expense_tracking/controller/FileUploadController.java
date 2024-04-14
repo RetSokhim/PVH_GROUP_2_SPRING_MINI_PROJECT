@@ -10,9 +10,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
+
 @RestController
-@RequestMapping("v1/files")
+@RequestMapping("api/v1/files")
 public class FileUploadController {
     private final FileService fileService;
 
@@ -20,15 +22,15 @@ public class FileUploadController {
         this.fileService = fileService;
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,name = "/upload")
-    @Operation(summary = "Upload Single File")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, name = "/upload")
+    @Operation(summary = "Upload File")
     public ResponseEntity<?> uploadFile(@RequestParam MultipartFile file) throws IOException {
         String fileName = fileService.saveFile(file);
         FileResponse fileResponse = new FileResponse(fileName, file.getContentType(), file.getSize());
         return new ResponseEntity<>(fileResponse, HttpStatus.CREATED);
     }
 
-    @GetMapping("/getFile")
+    @GetMapping()
     @Operation(summary = "Get File")
     public ResponseEntity<?> getFile(@RequestParam String fileName) throws IOException {
         Resource resource = fileService.getFileByFileName(fileName);

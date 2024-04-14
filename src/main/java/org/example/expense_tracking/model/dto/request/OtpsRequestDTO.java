@@ -5,14 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OtpsRequest {
+public class OtpsRequestDTO {
     private Integer otpsCode;
     private Timestamp issuedAt;
     private Timestamp expiration;
     private Integer verify;
-    private Integer user;
+    private UUID user;
 }

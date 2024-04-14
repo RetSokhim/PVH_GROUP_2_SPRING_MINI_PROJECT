@@ -1,6 +1,6 @@
 package org.example.expense_tracking.service.serviceimplement;
 
-import org.example.expense_tracking.model.dto.request.CategoryDTO;
+import org.example.expense_tracking.model.dto.request.CategoryRequestDTO;
 import org.example.expense_tracking.model.dto.response.CategoryResponse;
 import org.example.expense_tracking.model.dto.response.UserRegisterResponse;
 import org.example.expense_tracking.model.entity.Category;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -28,8 +29,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryResponse> getAllCategories(Integer userId) {
-        List<Category> categories = categoryRepository.getAllCategories(userId);
+    public List<CategoryResponse> getAllCategories(UUID userId, Integer size, Integer offset) {
+        List<Category> categories = categoryRepository.getAllCategories(userId,size,offset);
         List<CategoryResponse> categoryResponses = new ArrayList<>();
         for (Category category : categories) {
             CategoryResponse categoryResponse = modelMapper.map(category, CategoryResponse.class);
@@ -39,25 +40,25 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse getCategoryById(Integer id, Integer userId) {
-        Category category = categoryRepository.getCategoryById(id,userId);
+    public CategoryResponse getCategoryById(UUID categoryId, UUID userId) {
+        Category category = categoryRepository.getCategoryById(categoryId,userId);
         return modelMapper.map(category,CategoryResponse.class);
     }
 
     @Override
-    public void deleteCategoryById(Integer id, Integer userId) {
-        categoryRepository.deleteCategoryById(id,userId);
+    public void deleteCategoryById(UUID categoryId, UUID userId) {
+        categoryRepository.deleteCategoryById(categoryId,userId);
     }
 
     @Override
-    public CategoryResponse insertNewCategory(CategoryDTO categoryDTO) {
+    public CategoryResponse insertNewCategory(CategoryRequestDTO categoryRequestDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userRepository.findUserByEmail(email);
 
         Category category = new Category();
-        category.setName(categoryDTO.getName());
-        category.setDescription(categoryDTO.getDescription());
+        category.setName(categoryRequestDTO.getName());
+        category.setDescription(categoryRequestDTO.getDescription());
         category.setUser(user);
 
         Category categoryAfterInsertIntoDatabase = categoryRepository.insertNewCategory(category);
@@ -70,8 +71,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse updateCategoryById(Integer id, CategoryDTO categoryDTO, Integer userId) {
-        Category category = categoryRepository.updateCategoryById(id,categoryDTO,userId);
+    public CategoryResponse updateCategoryById(UUID categoryId, CategoryRequestDTO categoryRequestDTO, UUID userId) {
+        Category category = categoryRepository.updateCategoryById(categoryId, categoryRequestDTO,userId);
         return modelMapper.map(category,CategoryResponse.class);
     }
 

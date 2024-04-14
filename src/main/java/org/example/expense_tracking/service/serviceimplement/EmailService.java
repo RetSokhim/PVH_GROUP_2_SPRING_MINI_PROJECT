@@ -1,6 +1,5 @@
 package org.example.expense_tracking.service.serviceimplement;
 
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,6 +16,7 @@ public class EmailService {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
     }
+    //send normal text email
 //    public void sendEmailOtp(String email,String otpCode){
 //        try {
 //            MimeMessage message = javaMailSender.createMimeMessage();
@@ -30,7 +30,7 @@ public class EmailService {
 //            System.err.println("Error sending email: " + ex.getMessage());
 //        }
 //    }
-    public void sendEmailWithHtmlTemplate(String toEmail, String subject, String templateName, Context context) {
+    public void sendEmailWithHtmlTemplate(String toEmail, String subject, String templateName, Context context) throws Exception {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
 
@@ -41,8 +41,8 @@ public class EmailService {
             String htmlContent = templateEngine.process(templateName, context);
             helper.setText(htmlContent, true);
             javaMailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            // Handle exception
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
     }
 }

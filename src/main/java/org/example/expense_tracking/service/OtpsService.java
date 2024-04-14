@@ -1,15 +1,16 @@
 package org.example.expense_tracking.service;
 
-import org.apache.ibatis.annotations.Param;
-import org.example.expense_tracking.model.dto.request.OtpsRequest;
+import org.example.expense_tracking.model.dto.request.OtpsRequestDTO;
 import org.example.expense_tracking.model.entity.Otps;
 
+import java.util.UUID;
+
 public interface OtpsService {
-    OtpsRequest generateOtp ();
-    Otps getOtpByUserId(Integer userId);
-    void insertOtp(OtpsRequest otpsRequest);
+    OtpsRequestDTO generateOtp ();
+    Otps getOtpByUserId(UUID userId);
+    void insertOtp(OtpsRequestDTO otpsRequestDTO);
     Otps getOtpsByCode(Integer otpsCode);
-    Otps getOtpsUserId(Integer userId);
+    Otps getOtpsUserId(UUID userId);
     void confirmVerify(Integer verify);
-    void updateTheCodeAfterResend (OtpsRequest otpsRequest, Integer userId);
+    void updateTheCodeAfterResend (OtpsRequestDTO otpsRequestDTO, UUID userId);
 }

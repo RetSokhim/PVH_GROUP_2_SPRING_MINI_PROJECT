@@ -4,7 +4,7 @@ import org.example.expense_tracking.exception.AccountVerificationException;
 import org.example.expense_tracking.exception.OTPExpiredException;
 import org.example.expense_tracking.exception.PasswordException;
 import org.example.expense_tracking.exception.SearchNotFoundException;
-import org.example.expense_tracking.model.dto.request.OtpsRequest;
+import org.example.expense_tracking.model.dto.request.OtpsRequestDTO;
 import org.example.expense_tracking.model.dto.request.UserPasswordRequest;
 import org.example.expense_tracking.model.dto.request.UserRegisterRequest;
 import org.example.expense_tracking.model.dto.response.UserRegisterResponse;
@@ -44,11 +44,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRegisterResponse createNewUser(UserRegisterRequest userRegisterRequest) throws PasswordException {
+    public UserRegisterResponse createNewUser(UserRegisterRequest userRegisterRequest) throws Exception {
         if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())) {
             throw new PasswordException("Your password is not match with confirm password");
         }
-        OtpsRequest otps = otpsService.generateOtp();
+        OtpsRequestDTO otps = otpsService.generateOtp();
         Context context = new Context();
         context.setVariable("message", String.valueOf(otps.getOtpsCode()));
         emailService.sendEmailWithHtmlTemplate(userRegisterRequest.getEmail(),
@@ -79,12 +79,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void resendOtpCode(String email) throws SearchNotFoundException {
+    public void resendOtpCode(String email) throws Exception {
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
             throw new SearchNotFoundException("Cannot find your email account please register first");
         }
-        OtpsRequest otps = otpsService.generateOtp();
+        OtpsRequestDTO otps = otpsService.generateOtp();
         Context context = new Context();
         context.setVariable("message", String.valueOf(otps.getOtpsCode()));
         emailService.sendEmailWithHtmlTemplate(email,
@@ -103,5 +103,10 @@ public class UserServiceImpl implements UserService {
             userPasswordRequest.setPassword(passwordEncode);
             userRepository.resetPassword(userPasswordRequest, email);
         }
+    }
+
+    @Override
+    public User findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
     }
 }

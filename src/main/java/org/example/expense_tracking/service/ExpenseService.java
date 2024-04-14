@@ -1,10 +1,15 @@
 package org.example.expense_tracking.service;
 
-import org.example.expense_tracking.model.entity.Expense;
+import org.example.expense_tracking.model.dto.request.ExpenseRequestDTO;
+import org.example.expense_tracking.model.dto.response.ExpenseResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ExpenseService {
-
-    List<Expense> getAllExpense(Integer page, Integer size);
+    List<ExpenseResponse> getAllExpense(UUID userId, Integer size, Integer offset, String orderBy, String sortBy);
+    ExpenseResponse insertNewExpense (ExpenseRequestDTO expenseRequestDTO);
+    ExpenseResponse getExpenseById(UUID expenseId, UUID userId);
+    void deleteExpenseById(UUID expenseId, UUID userId);
+    ExpenseResponse updateExpenseById(UUID expenseId, ExpenseRequestDTO expenseRequestDTO, UUID userId);
 }
