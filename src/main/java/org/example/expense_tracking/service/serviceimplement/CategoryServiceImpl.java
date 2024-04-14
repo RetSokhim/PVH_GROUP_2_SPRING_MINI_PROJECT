@@ -1,7 +1,6 @@
 package org.example.expense_tracking.service.serviceimplement;
 
-import org.example.expense_tracking.model.dto.request.CategoryDTO;
-import org.example.expense_tracking.model.dto.response.CategoryRespond;
+import org.example.expense_tracking.model.dto.response.CategoryResponse;
 import org.example.expense_tracking.model.entity.Category;
 import org.example.expense_tracking.repository.CategoryRepository;
 import org.example.expense_tracking.service.CategoryService;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
@@ -20,36 +20,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryRespond> getAllCategories(Integer page, Integer siz) {
-        List<Category> categories = categoryRepository.getAllCategories();
-        List<CategoryRespond> categoryResponds = new ArrayList<>();
+    public List<CategoryResponse> getAllCategories(Integer userId) {
+        List<Category> categories = categoryRepository.getAllCategories(userId);
+        List<CategoryResponse> categoryResponses = new ArrayList<>();
         for (Category category : categories) {
-            CategoryRespond categoryRespond = modelMapper.map(category, CategoryRespond.class);
-            categoryResponds.add(categoryRespond);
+            CategoryResponse categoryResponse = modelMapper.map(category, CategoryResponse.class);
+            categoryResponses.add(categoryResponse);
         }
-        return categoryResponds;
+        return categoryResponses;
     }
-
-    @Override
-    public Category getCategoryById(Integer id) {
-        return categoryRepository.getCategoryById(id);
-    }
-
-    @Override
-    public Category insertNewCategory(CategoryDTO categoryDTO) {
-        return categoryRepository.insertNewCategory(categoryDTO);
-    }
-
-
-    @Override
-    public Category deleteCategoryById(Integer id) {
-        return categoryRepository.deleteCategoryById(id);
-    }
-
-    @Override
-    public Category updateCategoryById(Integer id, CategoryDTO categoryDTO) {
-        return categoryRepository.updateCategoryById(id,categoryDTO);
-    }
-
 
 }

@@ -1,10 +1,18 @@
 package org.example.expense_tracking.controller;
 
-import org.apache.coyote.BadRequestException;
+import org.example.expense_tracking.exception.AccountVerificationException;
+import org.example.expense_tracking.exception.OTPExpiredException;
+import org.example.expense_tracking.exception.PasswordException;
+import org.example.expense_tracking.exception.SearchNotFoundException;
+import org.example.expense_tracking.model.dto.CustomUserDetail;
 import org.example.expense_tracking.model.dto.request.UserLoginRequest;
+import org.example.expense_tracking.model.dto.request.UserPasswordRequest;
 import org.example.expense_tracking.model.dto.request.UserRegisterRequest;
-import org.example.expense_tracking.model.dto.response.UserLoginTokenRespond;
+import org.example.expense_tracking.model.dto.response.UserLoginTokenResponse;
 import org.example.expense_tracking.model.dto.response.UserRegisterResponse;
+import org.example.expense_tracking.model.entity.Otps;
+import org.example.expense_tracking.model.entity.User;
+import org.example.expense_tracking.repository.OtpsRepository;
 import org.example.expense_tracking.security.JwtService;
 import org.example.expense_tracking.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -24,19 +32,21 @@ public class AuthController {
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    public AuthController(UserService userService, BCryptPasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
+    private final OtpsRepository otpsRepository;
+    public AuthController(UserService userService, BCryptPasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService, OtpsRepository otpsRepository) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.otpsRepository = otpsRepository;
     }
     @PostMapping("/register")
-    public ResponseEntity<?> register (@RequestBody UserRegisterRequest userRegisterRequest){
+    public ResponseEntity<?> register (@RequestBody UserRegisterRequest userRegisterRequest) throws PasswordException {
         UserRegisterResponse authRegister = userService.createNewUser(userRegisterRequest);
         return new ResponseEntity<>(authRegister,HttpStatus.CREATED);
     }
     @PutMapping("/verify")
-    public ResponseEntity<?> verify(@RequestParam Integer otp){
+    public ResponseEntity<?> verify(@RequestParam Integer otp) throws AccountVerificationException, OTPExpiredException {
         userService.verifyAccount(otp);
         return new ResponseEntity<>("Your account is successfully verified",HttpStatus.OK);
     }
@@ -44,26 +54,35 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody UserLoginRequest userLoginRequest) throws Exception {
         authenticate(userLoginRequest.getEmail(), userLoginRequest.getPassword());
         final UserDetails userDetails = userService.loadUserByUsername(userLoginRequest.getEmail());
+        User user = ((CustomUserDetail) userDetails).getUser();
+        Integer userId = user.getUserId();
+        Otps otps = otpsRepository.getOtpsUserId(userId);
+        if (otps == null || otps.getVerify() == 0) {
+            throw new AccountVerificationException("Please verify your account first");
+        }
         final String token = jwtService.generateToken(userDetails);
-        UserLoginTokenRespond authResponse = new UserLoginTokenRespond(token);
+        UserLoginTokenResponse authResponse = new UserLoginTokenResponse(token);
         return ResponseEntity.ok(authResponse);
     }
     private void authenticate(String email, String password) throws Exception {
         try {
             UserDetails user = userService.loadUserByUsername(email);
-            if (!user.isAccountNonLocked()) {
-                throw new Exception("Account not verified. Please verify your account first.");
-            }
             if (!passwordEncoder.matches(password, user.getPassword())){
-                throw new BadRequestException("Wrong Password");}
+                throw new PasswordException("Your password is incorrect please try again");
+            }
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         } catch (DisabledException e) {
             throw new Exception("USER_DISABLED", e);} catch (BadCredentialsException e) {
             throw new Exception("INVALID_CREDENTIALS", e);}
     }
     @PostMapping("/resend")
-    public ResponseEntity<?> resendOtpCode (@RequestParam String email){
+    public ResponseEntity<?> resendOtpCode (@RequestParam String email) throws SearchNotFoundException {
         userService.resendOtpCode(email);
-        return new ResponseEntity<>("your code has already resent",HttpStatus.OK);
+        return new ResponseEntity<>("Your new verification code has already resent",HttpStatus.OK);
+    }
+    @PutMapping("/forget")
+    public ResponseEntity<?> forgetPassword (@RequestBody UserPasswordRequest userPasswordRequest,@RequestParam String email) throws PasswordException {
+        userService.resetPassword(userPasswordRequest,email);
+        return new ResponseEntity<>("Your password has been successfully reset",HttpStatus.OK);
     }
 }

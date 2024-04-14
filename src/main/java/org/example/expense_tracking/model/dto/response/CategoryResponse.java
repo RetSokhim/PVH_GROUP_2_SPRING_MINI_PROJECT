@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryRespond {
+public class CategoryResponse {
     private Integer categoryId;
     private String name;
     private String description;
