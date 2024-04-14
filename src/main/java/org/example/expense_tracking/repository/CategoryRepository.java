@@ -1,6 +1,7 @@
 package org.example.expense_tracking.repository;
 
 import org.apache.ibatis.annotations.*;
+import org.example.expense_tracking.model.dto.request.CategoryDTO;
 import org.example.expense_tracking.model.entity.Category;
 
 import java.util.List;
@@ -20,5 +21,27 @@ public interface CategoryRepository {
     })
     List<Category> getAllCategories(Integer userId);
 
+    @Select("""
+    SELECT * FROM categories_tb WHERE category_id = #{id} AND user_id = #{userId}
+    """)
+    @ResultMap("category")
+    Category getCategoryById(Integer id, Integer userId);
 
+    @Select("""
+    DELETE FROM categories_tb WHERE category_id = #{id} AND user_id = #{userId}
+    """)
+    @ResultMap("category")
+    void deleteCategoryById(Integer id, Integer userId);
+
+    @Select("""
+    INSERT INTO categories_tb(name, description, user_id) VALUES (#{categories.name}, #{categories.description}, #{categories.user.userId}) RETURNING *
+    """)
+    @ResultMap("category")
+    Category insertNewCategory(@Param("categories") Category category);
+
+    @Select("""
+    UPDATE categories_tb SET name = #{categories.name},description = #{categories.description} WHERE category_id = #{id} AND user_id = #{userId} RETURNING *
+    """)
+    @ResultMap("category")
+    Category updateCategoryById(@Param("id")Integer id,@Param("categories") CategoryDTO categoryDTO, @Param("userId")  Integer userId);
 }

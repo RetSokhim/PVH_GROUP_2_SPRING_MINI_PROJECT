@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class Expense {
     private Integer expenseId;
     private Integer amount;
+    private String description;
     private LocalDateTime date;
     private User user;
     private Category category;

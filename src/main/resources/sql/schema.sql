@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS categories_tb(
 CREATE TABLE IF NOT EXISTS expense_tb(
     expense_id SERIAL PRIMARY KEY ,
     amount INTEGER,
+    description TEXT,
     date TIMESTAMP,
     user_id INT REFERENCES user_tb(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
     category_id INT REFERENCES categories_tb(category_id) ON DELETE CASCADE ON UPDATE CASCADE

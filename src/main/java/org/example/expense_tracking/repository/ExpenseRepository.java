@@ -17,7 +17,9 @@ public interface ExpenseRepository {
             @Result(property = "amount",column = "amount"),
             @Result(property = "date", column = "date"),
             @Result(property = "description",column = "description"),
-            @Result(property = "user", column = "user_id"),
+            @Result(property = "user", column = "user_id",
+            one = @One(select = "org.example.expense_tracking.repository.UserRepository.findUserById")
+            ),
             @Result(property = "category", column = "category_id",
              one = @One(select = "org.example.expense_tracking.repository.CategoryRepository.getCategoryById")
             )
