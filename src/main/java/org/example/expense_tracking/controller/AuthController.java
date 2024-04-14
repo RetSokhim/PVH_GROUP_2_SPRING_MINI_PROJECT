@@ -3,6 +3,7 @@ package org.example.expense_tracking.controller;
 import org.example.expense_tracking.exception.AccountVerificationException;
 import org.example.expense_tracking.exception.OTPExpiredException;
 import org.example.expense_tracking.exception.PasswordException;
+import org.example.expense_tracking.exception.SearchNotFoundException;
 import org.example.expense_tracking.model.dto.CustomUserDetail;
 import org.example.expense_tracking.model.dto.request.UserLoginRequest;
 import org.example.expense_tracking.model.dto.request.UserPasswordRequest;
@@ -75,7 +76,7 @@ public class AuthController {
             throw new Exception("INVALID_CREDENTIALS", e);}
     }
     @PostMapping("/resend")
-    public ResponseEntity<?> resendOtpCode (@RequestParam String email){
+    public ResponseEntity<?> resendOtpCode (@RequestParam String email) throws SearchNotFoundException {
         userService.resendOtpCode(email);
         return new ResponseEntity<>("Your new verification code has already resent",HttpStatus.OK);
     }
