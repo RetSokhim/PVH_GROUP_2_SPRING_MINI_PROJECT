@@ -43,5 +43,5 @@ public interface CategoryRepository {
     UPDATE categories_tb SET name = #{categories.name},description = #{categories.description} WHERE category_id = #{id} AND user_id = #{userId} RETURNING *
     """)
     @ResultMap("category")
-    Category updateCategoryById(@Param("id")Integer id,@Param("categories") CategoryDTO categoryDTO, @Param("userId")  Integer userId);
+    Category updateCategoryById(Integer id,@Param("categories") CategoryDTO categoryDTO,Integer userId);
 }
