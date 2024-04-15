@@ -1,5 +1,6 @@
 package org.example.expense_tracking.controller;
 
+import jakarta.validation.Valid;
 import org.example.expense_tracking.exception.AccountVerificationException;
 import org.example.expense_tracking.exception.OTPExpiredException;
 import org.example.expense_tracking.exception.PasswordException;
@@ -44,7 +45,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserRegisterRequest userRegisterRequest) throws Exception {
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegisterRequest userRegisterRequest) throws Exception {
         UserRegisterResponse authRegister = userService.createNewUser(userRegisterRequest);
         return new ResponseEntity<>(authRegister, HttpStatus.CREATED);
     }
@@ -56,7 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginRequest userLoginRequest) throws Exception {
+    public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequest userLoginRequest) throws Exception {
         authenticate(userLoginRequest.getEmail(), userLoginRequest.getPassword());
         final UserDetails userDetails = userService.loadUserByUsername(userLoginRequest.getEmail());
         User user = ((CustomUserDetail) userDetails).getUser();
@@ -91,7 +92,7 @@ public class AuthController {
     }
 
     @PutMapping("/forget")
-    public ResponseEntity<?> forgetPassword(@RequestBody UserPasswordRequest userPasswordRequest, @RequestParam String email) throws PasswordException {
+    public ResponseEntity<?> forgetPassword(@Valid @RequestBody UserPasswordRequest userPasswordRequest, @RequestParam String email) throws PasswordException {
         userService.resetPassword(userPasswordRequest, email);
         return new ResponseEntity<>("Your password has been successfully reset", HttpStatus.OK);
     }

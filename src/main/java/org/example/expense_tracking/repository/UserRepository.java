@@ -42,4 +42,9 @@ public interface UserRepository {
     WHERE email = #{email}
     """)
     void resetPassword(@Param("user") UserPasswordRequest userPasswordRequest, String email);
+
+    @Select("""
+    SELECT EXISTS (SELECT 1 FROM user_tb WHERE email = #{email})
+    """)
+    Boolean checkUserExist (String email);
 }

@@ -53,4 +53,9 @@ public interface ExpenseRepository {
     """)
     @ResultMap("expense")
     Expense updateExpenseById(UUID expenseId, @Param("expenses") ExpenseRequestDTO expenseRequestDTO, UUID userId);
+
+    @Select("""
+    SELECT COUNT(*) FROM expense_tb WHERE user_id = #{userId}
+    """)
+    Integer getTotalExpense(UUID userId);
 }

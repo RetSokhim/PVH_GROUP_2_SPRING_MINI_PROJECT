@@ -1,9 +1,6 @@
 package org.example.expense_tracking.service.serviceimplement;
 
-import org.example.expense_tracking.exception.AccountVerificationException;
-import org.example.expense_tracking.exception.OTPExpiredException;
-import org.example.expense_tracking.exception.PasswordException;
-import org.example.expense_tracking.exception.SearchNotFoundException;
+import org.example.expense_tracking.exception.*;
 import org.example.expense_tracking.model.dto.request.OtpsRequestDTO;
 import org.example.expense_tracking.model.dto.request.UserPasswordRequest;
 import org.example.expense_tracking.model.dto.request.UserRegisterRequest;
@@ -12,6 +9,7 @@ import org.example.expense_tracking.model.dto.CustomUserDetail;
 import org.example.expense_tracking.model.entity.Otps;
 import org.example.expense_tracking.model.entity.User;
 import org.example.expense_tracking.repository.UserRepository;
+import org.example.expense_tracking.service.FileService;
 import org.example.expense_tracking.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,13 +26,15 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final OtpsServiceImpl otpsService;
     private final EmailService emailService;
+    private final FileService fileService;
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper mapper, BCryptPasswordEncoder bCryptPasswordEncoder, OtpsServiceImpl otpsService, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper mapper, BCryptPasswordEncoder bCryptPasswordEncoder, OtpsServiceImpl otpsService, EmailService emailService, FileService fileService) {
         this.userRepository = userRepository;
         this.mapper = mapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.otpsService = otpsService;
         this.emailService = emailService;
+        this.fileService = fileService;
     }
 
     @Override
@@ -45,8 +45,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserRegisterResponse createNewUser(UserRegisterRequest userRegisterRequest) throws Exception {
+        if(userRepository.checkUserExist(userRegisterRequest.getEmail())){
+            throw new EmailAlreadyExistException("This email is already registered");
+        }
         if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())) {
             throw new PasswordException("Your password is not match with confirm password");
+        }
+        if(fileService.getFileByFileName(userRegisterRequest.getProfileImage()) == null){
+            throw new NoSuchFieldException("Please upload profile image before register");
         }
         OtpsRequestDTO otps = otpsService.generateOtp();
         Context context = new Context();

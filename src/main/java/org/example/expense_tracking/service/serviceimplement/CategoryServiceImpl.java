@@ -1,5 +1,6 @@
 package org.example.expense_tracking.service.serviceimplement;
 
+import org.example.expense_tracking.exception.SearchNotFoundException;
 import org.example.expense_tracking.model.dto.request.CategoryRequestDTO;
 import org.example.expense_tracking.model.dto.response.CategoryResponse;
 import org.example.expense_tracking.model.dto.response.UserRegisterResponse;
@@ -40,13 +41,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse getCategoryById(UUID categoryId, UUID userId) {
+    public CategoryResponse getCategoryById(UUID categoryId, UUID userId) throws SearchNotFoundException {
         Category category = categoryRepository.getCategoryById(categoryId,userId);
+        if(category == null){
+            throw new SearchNotFoundException("Category with ID "+categoryId+" is not found");
+        }
         return modelMapper.map(category,CategoryResponse.class);
     }
 
     @Override
-    public void deleteCategoryById(UUID categoryId, UUID userId) {
+    public void deleteCategoryById(UUID categoryId, UUID userId) throws SearchNotFoundException {
+        if(categoryRepository.getCategoryById(categoryId,userId) == null){
+            throw new SearchNotFoundException("Category with ID "+categoryId+" is not found");
+        }
         categoryRepository.deleteCategoryById(categoryId,userId);
     }
 
@@ -71,9 +78,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse updateCategoryById(UUID categoryId, CategoryRequestDTO categoryRequestDTO, UUID userId) {
+    public CategoryResponse updateCategoryById(UUID categoryId, CategoryRequestDTO categoryRequestDTO, UUID userId) throws SearchNotFoundException {
+        if(categoryRepository.getCategoryById(categoryId,userId) == null){
+            throw new SearchNotFoundException("Category with ID "+categoryId+" is not found");
+        }
         Category category = categoryRepository.updateCategoryById(categoryId, categoryRequestDTO,userId);
         return modelMapper.map(category,CategoryResponse.class);
+    }
+
+    @Override
+    public Integer getTotalCategories(UUID userId) {
+        return categoryRepository.getTotalCategory(userId);
     }
 
 }

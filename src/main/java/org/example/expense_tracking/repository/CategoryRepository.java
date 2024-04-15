@@ -60,4 +60,9 @@ public interface CategoryRepository {
     """)
     @ResultMap("category")
     Category findCategoryById(UUID categoryId);
+
+    @Select("""
+    SELECT COUNT(*) FROM categories_tb WHERE user_id = #{userId}
+    """)
+    Integer getTotalCategory(UUID userId);
 }

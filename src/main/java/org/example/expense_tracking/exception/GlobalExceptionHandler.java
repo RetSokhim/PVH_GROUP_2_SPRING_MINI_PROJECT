@@ -4,6 +4,8 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +14,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 import java.net.URI;
 import java.nio.channels.AcceptPendingException;
+import java.nio.file.NoSuchFileException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
@@ -122,5 +125,18 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("errors", errors);
         return problemDetail;
     }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return new ResponseEntity<>("Invalid request body", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoSuchFileException.class)
+    public ProblemDetail noSuchFileException (NoSuchFileException e){
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,"Invalid image's name");
+        problemDetail.setTitle("NOT_FOUND");
+        problemDetail.setProperty("Time Stamp", LocalDateTime.now());
+        return problemDetail;
+    }
+
 
 }

@@ -21,6 +21,7 @@ public class ExpenseRequestDTO {
     @NotBlank(message = "Please fill up the description")
     private String description;
 
+    @NotNull(message = "date cannot be empty")
     private LocalDateTime Date;
 
     @NotNull(message = "category ID cannot be null")

@@ -22,7 +22,7 @@ public class FileServiceImpl implements FileService {
         String fileName = file.getOriginalFilename();
         // cute-cat.png => [cute-cat, png]
         assert fileName != null;
-        if (fileName.contains(".jpg") || fileName.contains(".png") || fileName.contains(".jpeg") || fileName.contains(".pdf") || fileName.contains(".pptx")) {
+        if (fileName.contains(".jpg") || fileName.contains(".png") || fileName.contains(".jpeg") || fileName.contains("gif") || fileName.contains("bmp")) {
             // convert file name to uuid format form
             fileName = UUID.randomUUID() + "." + StringUtils.getFilenameExtension(fileName);
             // if the folder not exist create one

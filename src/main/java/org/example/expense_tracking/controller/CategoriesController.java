@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import org.example.expense_tracking.exception.PageLimitException;
+import org.example.expense_tracking.exception.SearchNotFoundException;
 import org.example.expense_tracking.model.dto.request.CategoryRequestDTO;
 import org.example.expense_tracking.model.dto.response.ApiResponse;
 import org.example.expense_tracking.model.dto.response.CategoryResponse;
@@ -35,12 +37,20 @@ public class CategoriesController {
     @GetMapping()
     @Operation(summary = "Get all categories")
     public ResponseEntity<?> getAllCategory(@RequestParam(defaultValue = "5") @Positive(message = "size cannot be negative or 0") Integer size,
-                                            @RequestParam(defaultValue = "1") @Positive(message = "page cannot be negative or 0") Integer page) {
+                                            @RequestParam(defaultValue = "1") @Positive(message = "page cannot be negative or 0") Integer page) throws SearchNotFoundException, PageLimitException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userService.findUserByEmail(email);
 
         Integer offset = (page - 1) * size;
+        Integer totalCategories = categoryService.getTotalCategories(user.getUserId());
+        int totalPages = (int)Math.ceil((double) totalCategories/size);
+        if(totalCategories == 0){
+            throw new SearchNotFoundException("There is no category to show please add some");
+        }
+        if(page > totalPages){
+            throw new PageLimitException("Page cannot be greater than total page");
+        }
         List<CategoryResponse> userCategories = categoryService.getAllCategories(user.getUserId(),size,offset);
         ApiResponse<?> apiResponse = new ApiResponse<>("Get all categories successfully",
                 userCategories, LocalDateTime.now(), 201, HttpStatus.OK);
@@ -49,7 +59,7 @@ public class CategoriesController {
 
     @GetMapping("/{categoryId}")
     @Operation(summary = "Get category By ID")
-    public ResponseEntity<?> getCategoryById(@PathVariable UUID categoryId) {
+    public ResponseEntity<?> getCategoryById(@PathVariable UUID categoryId) throws SearchNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userService.findUserByEmail(email);
@@ -61,7 +71,7 @@ public class CategoriesController {
 
     @DeleteMapping("/{categoryId}")
     @Operation(summary = "Delete category by ID")
-    public ResponseEntity<?> deleteCategoryById(@PathVariable UUID categoryId) {
+    public ResponseEntity<?> deleteCategoryById(@PathVariable UUID categoryId) throws SearchNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userService.findUserByEmail(email);
@@ -83,7 +93,7 @@ public class CategoriesController {
     @PutMapping("/{categoryId}")
     @Operation(summary = "Update category by ID")
     public ResponseEntity<?> updateCategoryById(@PathVariable UUID categoryId,
-                                                @Valid @RequestBody CategoryRequestDTO categoryRequestDTO) {
+                                                @Valid @RequestBody CategoryRequestDTO categoryRequestDTO) throws SearchNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userService.findUserByEmail(email);

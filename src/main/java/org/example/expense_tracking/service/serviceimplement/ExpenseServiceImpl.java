@@ -1,5 +1,6 @@
 package org.example.expense_tracking.service.serviceimplement;
 
+import org.example.expense_tracking.exception.SearchNotFoundException;
 import org.example.expense_tracking.model.dto.request.ExpenseRequestDTO;
 import org.example.expense_tracking.model.dto.response.CategoryExpenseResponse;
 import org.example.expense_tracking.model.dto.response.ExpenseResponse;
@@ -38,22 +39,24 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public List<ExpenseResponse> getAllExpense(UUID userId, Integer size, Integer offset, String orderBy, String sortBy) {
-        List<Expense> expenses = expenseRepository.getAllExpense(userId,size,offset,orderBy,sortBy);
+        List<Expense> expenses = expenseRepository.getAllExpense(userId, size, offset, orderBy, sortBy);
         List<ExpenseResponse> expenseResponses = new ArrayList<>();
-        for(Expense expense : expenses){
-            ExpenseResponse expenseResponse = modelMapper.map(expense,ExpenseResponse.class);
+        for (Expense expense : expenses) {
+            ExpenseResponse expenseResponse = modelMapper.map(expense, ExpenseResponse.class);
             expenseResponses.add(expenseResponse);
         }
         return expenseResponses;
     }
 
     @Override
-    public ExpenseResponse insertNewExpense(ExpenseRequestDTO expenseRequestDTO) {
+    public ExpenseResponse insertNewExpense(ExpenseRequestDTO expenseRequestDTO) throws SearchNotFoundException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userRepository.findUserByEmail(email);
-        Category category = categoryRepository.getCategoryById(expenseRequestDTO.getCategoryId(),user.getUserId());
-
+        Category category = categoryRepository.getCategoryById(expenseRequestDTO.getCategoryId(), user.getUserId());
+        if (category == null) {
+            throw new SearchNotFoundException("Category is not found please enter valid category's ID");
+        }
         Expense expense = new Expense();
         expense.setAmount(expenseRequestDTO.getAmount());
         expense.setDescription(expenseRequestDTO.getDescription());
@@ -62,9 +65,9 @@ public class ExpenseServiceImpl implements ExpenseService {
         expense.setCategory(category);
         Expense expenseAfterInsertIntoDatabase = expenseRepository.insertNewExpense(expense);
 
-        UserRegisterResponse userRegisterResponse = modelMapper.map(user,UserRegisterResponse.class);
-        CategoryExpenseResponse categoryExpenseResponse = modelMapper.map(category,CategoryExpenseResponse.class);
-        ExpenseResponse expenseResponse = modelMapper.map(expense,ExpenseResponse.class);
+        UserRegisterResponse userRegisterResponse = modelMapper.map(user, UserRegisterResponse.class);
+        CategoryExpenseResponse categoryExpenseResponse = modelMapper.map(category, CategoryExpenseResponse.class);
+        ExpenseResponse expenseResponse = modelMapper.map(expense, ExpenseResponse.class);
         expenseResponse.setCategory(categoryExpenseResponse);
         expenseResponse.setUser(userRegisterResponse);
         expenseResponse.setExpenseId(expenseAfterInsertIntoDatabase.getExpenseId());
@@ -72,20 +75,36 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ExpenseResponse getExpenseById(UUID expenseId, UUID userId) {
-        Expense expense = expenseRepository.getExpenseById(expenseId,userId);
-        return modelMapper.map(expense,ExpenseResponse.class);
+    public ExpenseResponse getExpenseById(UUID expenseId, UUID userId) throws SearchNotFoundException {
+        Expense expense = expenseRepository.getExpenseById(expenseId, userId);
+        if (expense == null) {
+            throw new SearchNotFoundException("Expense with ID " + expenseId + " is not found");
+        }
+        return modelMapper.map(expense, ExpenseResponse.class);
     }
 
     @Override
-    public void deleteExpenseById(UUID expenseId, UUID userId) {
-        expenseRepository.deleteExpenseById(expenseId,userId);
+    public void deleteExpenseById(UUID expenseId, UUID userId) throws SearchNotFoundException {
+        if (expenseRepository.getExpenseById(expenseId, userId) == null) {
+            throw new SearchNotFoundException("Expense with ID " + expenseId + " is not found");
+        }
+        expenseRepository.deleteExpenseById(expenseId, userId);
     }
 
     @Override
-    public ExpenseResponse updateExpenseById(UUID expenseId, ExpenseRequestDTO expenseRequestDTO, UUID userId) {
-        Expense expense = expenseRepository.updateExpenseById(expenseId, expenseRequestDTO,userId);
-        return modelMapper.map(expense,ExpenseResponse.class);
+    public ExpenseResponse updateExpenseById(UUID expenseId, ExpenseRequestDTO expenseRequestDTO, UUID userId) throws SearchNotFoundException {
+        if (expenseRepository.getExpenseById(expenseId, userId) == null) {
+            throw new SearchNotFoundException("Expense with ID " + expenseId + " is not found");
+        } else if (categoryRepository.getCategoryById(expenseRequestDTO.getCategoryId(), userId) == null) {
+            throw new SearchNotFoundException("Category with ID " + expenseRequestDTO.getCategoryId() + " is invalid");
+        }
+        Expense expense = expenseRepository.updateExpenseById(expenseId, expenseRequestDTO, userId);
+        return modelMapper.map(expense, ExpenseResponse.class);
+    }
+
+    @Override
+    public Integer getTotalExpense(UUID userId) {
+        return expenseRepository.getTotalExpense(userId);
     }
 }
 
