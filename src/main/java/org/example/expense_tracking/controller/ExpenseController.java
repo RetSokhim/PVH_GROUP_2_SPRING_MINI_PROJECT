@@ -76,7 +76,7 @@ public class ExpenseController {
         ExpenseResponse userExpense = expenseService.getExpenseById(expenseId, user.getUserId());
         ApiResponse<?> apiResponse = new ApiResponse<>(
                 "Get expense with ID " + expenseId + " successfully",
-                userExpense, LocalDateTime.now(), 201, HttpStatus.OK);
+                userExpense, LocalDateTime.now(), 200, HttpStatus.OK);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
@@ -89,7 +89,7 @@ public class ExpenseController {
         expenseService.deleteExpenseById(expenseId, user.getUserId());
         ApiResponse<?> apiResponse = new ApiResponse<>(
                 "Deleted expense with ID " + expenseId + " successfully",
-                null, LocalDateTime.now(), 201, HttpStatus.OK);
+                null, LocalDateTime.now(), 200, HttpStatus.OK);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
@@ -98,7 +98,7 @@ public class ExpenseController {
     public ResponseEntity<?> insertNewExpense(@Valid @RequestBody ExpenseRequestDTO expenseRequestDTO) throws SearchNotFoundException {
         ExpenseResponse expenseResponse = expenseService.insertNewExpense(expenseRequestDTO);
         ApiResponse<?> apiResponse = new ApiResponse<>("New expense has been added successfully",
-                expenseResponse, LocalDateTime.now(), 201, HttpStatus.CREATED);
+                expenseResponse, LocalDateTime.now(), 200, HttpStatus.CREATED);
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 
@@ -111,7 +111,7 @@ public class ExpenseController {
         User user = userService.findUserByEmail(email);
         ExpenseResponse userExpense = expenseService.updateExpenseById(expenseId, expenseRequestDTO, user.getUserId());
         ApiResponse<?> apiResponse = new ApiResponse<>("Updated expense with ID " + expenseId + " successfully",
-                userExpense, LocalDateTime.now(), 201, HttpStatus.OK);
+                userExpense, LocalDateTime.now(), 200, HttpStatus.OK);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 

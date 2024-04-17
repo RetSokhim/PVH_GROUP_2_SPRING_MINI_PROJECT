@@ -23,6 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
+
     public CategoryServiceImpl(CategoryRepository categoryRepository, ModelMapper modelMapper, UserRepository userRepository) {
         this.categoryRepository = categoryRepository;
         this.modelMapper = modelMapper;
@@ -31,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryResponse> getAllCategories(UUID userId, Integer size, Integer offset) {
-        List<Category> categories = categoryRepository.getAllCategories(userId,size,offset);
+        List<Category> categories = categoryRepository.getAllCategories(userId, size, offset);
         List<CategoryResponse> categoryResponses = new ArrayList<>();
         for (Category category : categories) {
             CategoryResponse categoryResponse = modelMapper.map(category, CategoryResponse.class);
@@ -42,19 +43,19 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse getCategoryById(UUID categoryId, UUID userId) throws SearchNotFoundException {
-        Category category = categoryRepository.getCategoryById(categoryId,userId);
-        if(category == null){
-            throw new SearchNotFoundException("Category with ID "+categoryId+" is not found");
+        Category category = categoryRepository.getCategoryById(categoryId, userId);
+        if (category == null) {
+            throw new SearchNotFoundException("Category with ID " + categoryId + " is not found");
         }
-        return modelMapper.map(category,CategoryResponse.class);
+        return modelMapper.map(category, CategoryResponse.class);
     }
 
     @Override
     public void deleteCategoryById(UUID categoryId, UUID userId) throws SearchNotFoundException {
-        if(categoryRepository.getCategoryById(categoryId,userId) == null){
-            throw new SearchNotFoundException("Category with ID "+categoryId+" is not found");
+        if (categoryRepository.getCategoryById(categoryId, userId) == null) {
+            throw new SearchNotFoundException("Category with ID " + categoryId + " is not found");
         }
-        categoryRepository.deleteCategoryById(categoryId,userId);
+        categoryRepository.deleteCategoryById(categoryId, userId);
     }
 
     @Override
@@ -79,11 +80,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse updateCategoryById(UUID categoryId, CategoryRequestDTO categoryRequestDTO, UUID userId) throws SearchNotFoundException {
-        if(categoryRepository.getCategoryById(categoryId,userId) == null){
-            throw new SearchNotFoundException("Category with ID "+categoryId+" is not found");
+        if (categoryRepository.getCategoryById(categoryId, userId) == null) {
+            throw new SearchNotFoundException("Category with ID " + categoryId + " is not found");
         }
-        Category category = categoryRepository.updateCategoryById(categoryId, categoryRequestDTO,userId);
-        return modelMapper.map(category,CategoryResponse.class);
+        Category category = categoryRepository.updateCategoryById(categoryId, categoryRequestDTO, userId);
+        return modelMapper.map(category, CategoryResponse.class);
     }
 
     @Override

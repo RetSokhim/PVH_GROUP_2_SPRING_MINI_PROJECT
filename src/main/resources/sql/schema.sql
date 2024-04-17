@@ -1,4 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- CREATE TABLE IF NOT EXISTS user_tb
 -- (
@@ -42,7 +41,7 @@ CREATE TABLE IF NOT EXISTS user_tb(
     profile_image VARCHAR(300) NOT NULL
 );
 CREATE TABLE IF NOT EXISTS otps_tb(
-    otps_id SERIAL PRIMARY KEY ,
+    otps_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     otps_code INTEGER ,
     issued_at TIMESTAMP,
     expiration TIMESTAMP,

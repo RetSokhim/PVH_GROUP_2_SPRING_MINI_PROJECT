@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserLoginRequest {
+
     @Email(message = "Please input valid email format")
     @NotBlank(message = "Email cannot be blank")
     private String email;

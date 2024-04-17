@@ -14,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExpenseRequestDTO {
+
     @Positive(message = "Please input only positive number")
     @NotNull(message = "Amount cannot be null")
     private Integer amount;

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Mapper
 public interface OtpsRepository {
-    @Select("""
+    @Insert("""
             INSERT INTO otps_tb(otps_code, issued_at, expiration, user_id)
             VALUES (#{user.otpsCode},#{user.issuedAt},#{user.expiration},#{user.user});
             """)
@@ -29,7 +29,7 @@ public interface OtpsRepository {
             WHERE otps_code = #{otpsCode}
             """)
     @Results({
-            @Result(property = "otpsId", column = "otps_id"),
+            @Result(property = "otpsId", column = "otps_id", typeHandler = org.example.expense_tracking.configuration.UUIDTypeHandler.class),
             @Result(property = "otpsCode", column = "otps_code"),
             @Result(property = "issuedAt", column = "issued_at"),
             @Result(property = "user", column = "user_id",
@@ -42,7 +42,7 @@ public interface OtpsRepository {
             SELECT * FROM otps_tb
             WHERE user_id = #{userId}
             """)
-    @Result(property = "otpsId", column = "otps_id")
+    @Result(property = "otpsId", column = "otps_id", typeHandler = org.example.expense_tracking.configuration.UUIDTypeHandler.class)
     @Result(property = "otpsCode", column = "otps_code")
     @Result(property = "issuedAt", column = "issued_at")
     @Result(property = "user", column = "user_id",

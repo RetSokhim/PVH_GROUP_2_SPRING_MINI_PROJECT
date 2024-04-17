@@ -45,13 +45,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserRegisterResponse createNewUser(UserRegisterRequest userRegisterRequest) throws Exception {
-        if(userRepository.checkUserExist(userRegisterRequest.getEmail())){
+        if (userRepository.checkUserExist(userRegisterRequest.getEmail())) {
             throw new EmailAlreadyExistException("This email is already registered");
         }
         if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())) {
             throw new PasswordException("Your password is not match with confirm password");
         }
-        if(fileService.getFileByFileName(userRegisterRequest.getProfileImage()) == null){
+        if (fileService.getFileByFileName(userRegisterRequest.getProfileImage()) == null) {
             throw new NoSuchFieldException("Please upload profile image before register");
         }
         OtpsRequestDTO otps = otpsService.generateOtp();

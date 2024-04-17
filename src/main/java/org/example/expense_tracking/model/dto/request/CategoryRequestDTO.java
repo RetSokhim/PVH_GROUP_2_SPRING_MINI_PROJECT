@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryRequestDTO {
+
     @NotBlank(message = "Category's name cannot be blank")
     private String name;
     @NotBlank(message = "Category's description cannot be blank")

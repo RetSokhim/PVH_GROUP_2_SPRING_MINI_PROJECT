@@ -65,7 +65,7 @@ public class CategoriesController {
         User user = userService.findUserByEmail(email);
         CategoryResponse userCategory = categoryService.getCategoryById(categoryId, user.getUserId());
         ApiResponse<?> apiResponse = new ApiResponse<>("Get category with ID " + categoryId + " successfully",
-                userCategory, LocalDateTime.now(), 201, HttpStatus.OK);
+                userCategory, LocalDateTime.now(), 200, HttpStatus.OK);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
@@ -77,7 +77,7 @@ public class CategoriesController {
         User user = userService.findUserByEmail(email);
         categoryService.deleteCategoryById(categoryId, user.getUserId());
         ApiResponse<?> apiResponse = new ApiResponse<>("Delete category with ID " + categoryId + " successfully",
-                null, LocalDateTime.now(), 201, HttpStatus.OK);
+                null, LocalDateTime.now(), 200, HttpStatus.OK);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
@@ -86,7 +86,7 @@ public class CategoriesController {
     public ResponseEntity<?> insertNewCategory(@Valid @RequestBody CategoryRequestDTO categoryRequestDTO) {
         CategoryResponse userCategory = categoryService.insertNewCategory(categoryRequestDTO);
         ApiResponse<?> apiResponse = new ApiResponse<>("New category has been added successfully",
-                userCategory, LocalDateTime.now(), 201, HttpStatus.OK);
+                userCategory, LocalDateTime.now(), 200, HttpStatus.OK);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
@@ -99,7 +99,7 @@ public class CategoriesController {
         User user = userService.findUserByEmail(email);
         CategoryResponse categoryResponse = categoryService.updateCategoryById(categoryId, categoryRequestDTO, user.getUserId());
         ApiResponse<?> apiResponse = new ApiResponse<>("updated category with ID " + categoryId + " successfully",
-                categoryResponse, LocalDateTime.now(), 201, HttpStatus.OK);
+                categoryResponse, LocalDateTime.now(), 200, HttpStatus.OK);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 }

@@ -16,6 +16,7 @@ public class EmailService {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
     }
+
     //send normal text email
 //    public void sendEmailOtp(String email,String otpCode){
 //        try {
@@ -30,6 +31,7 @@ public class EmailService {
 //            System.err.println("Error sending email: " + ex.getMessage());
 //        }
 //    }
+    //send html template email
     public void sendEmailWithHtmlTemplate(String toEmail, String subject, String templateName, Context context) throws Exception {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");

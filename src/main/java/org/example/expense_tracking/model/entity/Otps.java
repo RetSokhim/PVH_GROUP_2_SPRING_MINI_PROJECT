@@ -5,12 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Otps {
-    private Integer otpsId;
+    private UUID otpsId;
     private Integer otpsCode;
     private Timestamp issuedAt;
     private Timestamp expiration;

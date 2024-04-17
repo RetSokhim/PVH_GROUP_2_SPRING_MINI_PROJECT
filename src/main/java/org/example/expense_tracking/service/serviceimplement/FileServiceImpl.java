@@ -16,6 +16,7 @@ import java.util.UUID;
 @Service
 public class FileServiceImpl implements FileService {
     private final Path path = Paths.get("src/main/resources/images");
+
     @Override
     public String saveFile(MultipartFile file) throws IOException {
         // get filename with extension (cute-cat.png)
