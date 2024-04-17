@@ -1,5 +1,6 @@
 package org.example.expense_tracking.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.example.expense_tracking.exception.AccountVerificationException;
 import org.example.expense_tracking.exception.OTPExpiredException;
@@ -45,18 +46,21 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Register New user")
     public ResponseEntity<?> register(@Valid @RequestBody UserRegisterRequest userRegisterRequest) throws Exception {
         UserRegisterResponse authRegister = userService.createNewUser(userRegisterRequest);
         return new ResponseEntity<>(authRegister, HttpStatus.CREATED);
     }
 
     @PutMapping("/verify")
+    @Operation(summary = "Verify user")
     public ResponseEntity<?> verify(@RequestParam Integer otp) throws AccountVerificationException, OTPExpiredException {
         userService.verifyAccount(otp);
         return new ResponseEntity<>("Your account is successfully verified", HttpStatus.OK);
     }
 
     @PostMapping("/login")
+    @Operation(summary = "User Login")
     public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequest userLoginRequest) throws Exception {
         authenticate(userLoginRequest.getEmail(), userLoginRequest.getPassword());
         final UserDetails userDetails = userService.loadUserByUsername(userLoginRequest.getEmail());
@@ -86,12 +90,14 @@ public class AuthController {
     }
 
     @PostMapping("/resend")
+    @Operation(summary = "Resend verify code")
     public ResponseEntity<?> resendOtpCode(@RequestParam String email) throws Exception {
         userService.resendOtpCode(email);
         return new ResponseEntity<>("Your new verification code has already resent", HttpStatus.OK);
     }
 
     @PutMapping("/forget")
+    @Operation(summary = "Forget password")
     public ResponseEntity<?> forgetPassword(@Valid @RequestBody UserPasswordRequest userPasswordRequest, @RequestParam String email) throws PasswordException {
         userService.resetPassword(userPasswordRequest, email);
         return new ResponseEntity<>("Your password has been successfully reset", HttpStatus.OK);
