@@ -1,11 +1,10 @@
 package org.example.expense_tracking.configuration;
 
+import lombok.AllArgsConstructor;
 import org.example.expense_tracking.security.JwtAuthEntrypoint;
 import org.example.expense_tracking.security.JwtAuthFilter;
-import org.springframework.context.annotation.Configuration;
-
-import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,7 +30,7 @@ public class SecurityConfiguration {
         http
                 .cors(withDefaults()).csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/auth/**","/v3/api-docs/**",
+                        .requestMatchers("api/v1/auth/**","api/v1/files/**","/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()

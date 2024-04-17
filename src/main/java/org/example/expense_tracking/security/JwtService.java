@@ -16,7 +16,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtService {
-    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60; //5 hour
+    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
     public static final String SECRET = "5465464bcd3967c1859c1c9eeb365dc8ebd62e782dbfa7e094b6e40404dcdb8b15f4bcd3967c1859c1c9eeb365dc8ebd62e782dbfa7e094b6e40404dcdb8b15f";
 
     private String createToken(Map<String, Object> claim, String subject){

@@ -1,4 +1,4 @@
-package org.example.expense_tracking.model.entity;
+package org.example.expense_tracking.model.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,13 +8,12 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class Otps {
-    private UUID otpsId;
+@NoArgsConstructor
+public class OtpsRequestDTO {
     private Integer otpsCode;
     private Timestamp issuedAt;
     private Timestamp expiration;
     private Integer verify;
-    private User user;
+    private UUID user;
 }
