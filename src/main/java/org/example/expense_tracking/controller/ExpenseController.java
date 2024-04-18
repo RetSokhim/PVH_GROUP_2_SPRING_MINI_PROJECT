@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import org.example.expense_tracking.exception.BadRequestException;
 import org.example.expense_tracking.exception.PageLimitException;
 import org.example.expense_tracking.exception.SearchNotFoundException;
 import org.example.expense_tracking.model.dto.request.ExpenseRequestDTO;
@@ -95,7 +96,7 @@ public class ExpenseController {
 
     @PostMapping
     @Operation(summary = "Insert new expense")
-    public ResponseEntity<?> insertNewExpense(@Valid @RequestBody ExpenseRequestDTO expenseRequestDTO) throws SearchNotFoundException {
+    public ResponseEntity<?> insertNewExpense(@Valid @RequestBody ExpenseRequestDTO expenseRequestDTO) throws SearchNotFoundException, BadRequestException {
         ExpenseResponse expenseResponse = expenseService.insertNewExpense(expenseRequestDTO);
         ApiResponse<?> apiResponse = new ApiResponse<>("New expense has been added successfully",
                 expenseResponse, LocalDateTime.now(), 200, HttpStatus.CREATED);
@@ -105,7 +106,7 @@ public class ExpenseController {
     @PutMapping("/{expenseId}")
     @Operation(summary = "Update expense By ID")
     public ResponseEntity<?> updateExpenseById(@PathVariable UUID expenseId,
-                                               @Valid @RequestBody ExpenseRequestDTO expenseRequestDTO) throws SearchNotFoundException {
+                                               @Valid @RequestBody ExpenseRequestDTO expenseRequestDTO) throws SearchNotFoundException, BadRequestException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userService.findUserByEmail(email);

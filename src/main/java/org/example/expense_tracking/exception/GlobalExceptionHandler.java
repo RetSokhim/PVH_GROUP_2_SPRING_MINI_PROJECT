@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.net.URI;
 import java.nio.channels.AcceptPendingException;
@@ -135,6 +136,23 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,"Invalid image's name");
         problemDetail.setTitle("NOT_FOUND");
         problemDetail.setProperty("Time Stamp", LocalDateTime.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ProblemDetail badRequestException (BadRequestException e){
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,
+                e.getMessage());
+        problemDetail.setTitle("UNAUTHORIZED");
+        problemDetail.setProperty("Time Stamp",LocalDateTime.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        ProblemDetail problemDetail= ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,"Please check your input and try again");
+        problemDetail.setTitle("BAD_REQUEST");
+        problemDetail.setProperty("Time Stamp",LocalDateTime.now());
         return problemDetail;
     }
 

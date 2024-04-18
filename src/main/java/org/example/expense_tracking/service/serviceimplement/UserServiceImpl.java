@@ -40,6 +40,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String email) {
         User user = userRepository.findUserByEmail(email);
+        if(user == null){
+            try {
+                throw new SearchNotFoundException("User with this email is not found check your email and try again ");
+            } catch (SearchNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return new CustomUserDetail(user);
     }
 
@@ -100,7 +107,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void resetPassword(UserPasswordRequest userPasswordRequest, String email) throws PasswordException {
+    public void resetPassword(UserPasswordRequest userPasswordRequest, String email) throws PasswordException, SearchNotFoundException {
+        if(userRepository.findUserByEmail(email) == null){
+            throw new SearchNotFoundException("User with this email is found");
+        }
         if (!userPasswordRequest.getPassword().equals(userPasswordRequest.getConfirmPassword())) {
             throw new PasswordException("Your password is not match with confirm password");
         }

@@ -1,5 +1,6 @@
 package org.example.expense_tracking.service.serviceimplement;
 
+import org.example.expense_tracking.exception.BadRequestException;
 import org.example.expense_tracking.exception.SearchNotFoundException;
 import org.example.expense_tracking.model.dto.request.ExpenseRequestDTO;
 import org.example.expense_tracking.model.dto.response.CategoryExpenseResponse;
@@ -49,7 +50,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ExpenseResponse insertNewExpense(ExpenseRequestDTO expenseRequestDTO) throws SearchNotFoundException {
+    public ExpenseResponse insertNewExpense(ExpenseRequestDTO expenseRequestDTO) throws SearchNotFoundException, BadRequestException {
+        LocalDateTime expenseDate = expenseRequestDTO.getDate();
+        if(expenseDate.isAfter(LocalDateTime.now())){
+            throw new BadRequestException("Date time cannot be greater than current time");
+        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userRepository.findUserByEmail(email);
@@ -60,9 +65,10 @@ public class ExpenseServiceImpl implements ExpenseService {
         Expense expense = new Expense();
         expense.setAmount(expenseRequestDTO.getAmount());
         expense.setDescription(expenseRequestDTO.getDescription());
-        expense.setDate(LocalDateTime.now());
+        expense.setDate(expenseRequestDTO.getDate());
         expense.setUser(user);
         expense.setCategory(category);
+
         Expense expenseAfterInsertIntoDatabase = expenseRepository.insertNewExpense(expense);
 
         UserRegisterResponse userRegisterResponse = modelMapper.map(user, UserRegisterResponse.class);
@@ -92,7 +98,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ExpenseResponse updateExpenseById(UUID expenseId, ExpenseRequestDTO expenseRequestDTO, UUID userId) throws SearchNotFoundException {
+    public ExpenseResponse updateExpenseById(UUID expenseId, ExpenseRequestDTO expenseRequestDTO, UUID userId) throws SearchNotFoundException, BadRequestException {
+        LocalDateTime expenseDate = expenseRequestDTO.getDate();
+        if(expenseDate.isAfter(LocalDateTime.now())){
+            throw new BadRequestException("Date time cannot be greater than current time");
+        }
         if (expenseRepository.getExpenseById(expenseId, userId) == null) {
             throw new SearchNotFoundException("Expense with ID " + expenseId + " is not found");
         } else if (categoryRepository.getCategoryById(expenseRequestDTO.getCategoryId(), userId) == null) {

@@ -12,16 +12,6 @@ public interface OtpsRepository {
             INSERT INTO otps_tb(otps_code, issued_at, expiration, user_id)
             VALUES (#{user.otpsCode},#{user.issuedAt},#{user.expiration},#{user.user});
             """)
-//    @Results(id = "otpsMapping",value = {
-//            @Result(property = "otpsId",column = "otps_id"),
-//            @Result(property = "otpsCode",column = "otps_code"),
-//            @Result(property = "issuedAt",column = "issued_at"),
-//            @Result(property = "expiration",column = "expiration"),
-//            @Result(property = "verify",column = "verify"),
-//            @Result(property = "user",column = "user_id",
-//                    one = @One(select = "org.example.expense_tracking.repository.UserRepository.findUserById")
-//            )
-//    })
     void insertOtp(@Param("user") OtpsRequestDTO otpsRequestDTO);
 
     @Select("""
@@ -36,7 +26,7 @@ public interface OtpsRepository {
                     one = @One(select = "org.example.expense_tracking.repository.UserRepository.findUserById")
             )
     })
-    Otps getOtpsByCode(@Param("otpsCode")Integer otpsCode);
+    Otps getOtpsByCode(@Param("otpsCode") Integer otpsCode);
 
     @Select("""
             SELECT * FROM otps_tb
@@ -54,7 +44,6 @@ public interface OtpsRepository {
             UPDATE otps_tb SET verify = #{verify}
             WHERE otps_code = #{verify}
             """)
-//    @ResultMap("otpsMapping")
     void confirmVerify(@Param("verify") Integer verify);
 
     //For resend code
@@ -63,6 +52,5 @@ public interface OtpsRepository {
             SET otps_code = #{otps.otpsCode},issued_at = #{otps.issuedAt},expiration = #{otps.expiration}
             WHERE user_id = #{userId}
             """)
-//    @ResultMap("otpsMapping")
     void updateTheCodeAfterResend(@Param("otps") OtpsRequestDTO otpsRequestDTO, UUID userId);
 }

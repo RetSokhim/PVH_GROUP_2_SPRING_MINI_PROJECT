@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.example.expense_tracking.exception.AccountVerificationException;
 import org.example.expense_tracking.exception.OTPExpiredException;
 import org.example.expense_tracking.exception.PasswordException;
+import org.example.expense_tracking.exception.SearchNotFoundException;
 import org.example.expense_tracking.model.dto.CustomUserDetail;
 import org.example.expense_tracking.model.dto.request.UserLoginRequest;
 import org.example.expense_tracking.model.dto.request.UserPasswordRequest;
@@ -25,7 +26,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/auth")
@@ -61,8 +61,7 @@ public class AuthController {
         authenticate(userLoginRequest.getEmail(), userLoginRequest.getPassword());
         final UserDetails userDetails = userService.loadUserByUsername(userLoginRequest.getEmail());
         User user = ((CustomUserDetail) userDetails).getUser();
-        UUID userId = user.getUserId();
-        Otps otps = otpsRepository.getOtpsUserId(userId);
+        Otps otps = otpsRepository.getOtpsUserId(user.getUserId());
         if (otps == null || otps.getVerify() == 0) {
             throw new AccountVerificationException("Please verify your account first");
         }
@@ -92,7 +91,7 @@ public class AuthController {
     }
 
     @PutMapping("/forget")
-    public ResponseEntity<?> forgetPassword(@Valid @RequestBody UserPasswordRequest userPasswordRequest, @RequestParam String email) throws PasswordException {
+    public ResponseEntity<?> forgetPassword(@Valid @RequestBody UserPasswordRequest userPasswordRequest, @RequestParam String email) throws PasswordException, SearchNotFoundException {
         userService.resetPassword(userPasswordRequest, email);
         return new ResponseEntity<>("Your password has been successfully reset", HttpStatus.OK);
     }

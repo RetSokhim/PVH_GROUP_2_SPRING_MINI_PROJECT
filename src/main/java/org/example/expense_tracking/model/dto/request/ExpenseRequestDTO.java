@@ -2,6 +2,7 @@ package org.example.expense_tracking.model.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class ExpenseRequestDTO {
     @NotNull(message = "Amount cannot be null")
     private Integer amount;
 
+    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Only letters and numbers are allowed")
     @NotBlank(message = "Please fill up the description")
     private String description;
 

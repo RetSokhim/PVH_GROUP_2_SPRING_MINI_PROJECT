@@ -17,7 +17,7 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    //send normal text email
+    //    send normal text email
 //    public void sendEmailOtp(String email,String otpCode){
 //        try {
 //            MimeMessage message = javaMailSender.createMimeMessage();
