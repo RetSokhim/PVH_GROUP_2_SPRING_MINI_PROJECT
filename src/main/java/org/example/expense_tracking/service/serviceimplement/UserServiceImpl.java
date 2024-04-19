@@ -83,4 +83,9 @@ public class UserServiceImpl implements UserService {
         }
         otpsRepository.updateTheCodeAfterResend(otps,user.getUserId());
     }
+
+    @Override
+    public User findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
+    }
 }

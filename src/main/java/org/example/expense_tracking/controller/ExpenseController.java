@@ -2,6 +2,7 @@ package org.example.expense_tracking.controller;
 
 import lombok.AllArgsConstructor;
 import org.example.expense_tracking.model.dto.response.ApiResponse;
+import org.example.expense_tracking.model.entity.User;
 import org.example.expense_tracking.service.ExpenseService;
 import org.example.expense_tracking.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -22,10 +23,11 @@ public class ExpenseController {
     private final UserService userService;
 
     @DeleteMapping("/{expenseId}")
-    public ResponseEntity<?> deleteExpense(@PathVariable UUID expenseId){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String email
-        expenseService.deleteExpenseByID(expenseId);
+    public ResponseEntity<?> deleteExpense(@PathVariable Integer expenseId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userService.findUserByEmail(email);
+        expenseService.deleteExpenseByID(expenseId, user.getUserId());
         return ResponseEntity.ok(
                 ApiResponse.builder().message("Deleted expense with ID f8731b3c-8979-48db-b87a-6a5f5b23307e successfully")
                         .time(LocalDateTime.now())

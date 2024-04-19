@@ -6,6 +6,7 @@ import java.util.UUID;
 
 @Mapper
 public interface ExpenseRepository {
+
     @Results(id = "expenseMapping", value = {
             @Result(property = "expenseId", column = "expense_id"),
             @Result(property = "amount", column = "amount"),
@@ -14,5 +15,5 @@ public interface ExpenseRepository {
             one = @One(select = "org.example.expense_tracking.repository.CategoryRepository.getCategoryById")
             )
     })
-    void deleteExpenseById(UUID expenseId);
+    void deleteExpenseById(Integer expenseId, Integer userId);
 }
