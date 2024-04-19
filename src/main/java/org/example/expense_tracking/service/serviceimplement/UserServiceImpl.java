@@ -97,6 +97,10 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new SearchNotFoundException("Cannot find your email account please register first");
         }
+        Otps otp = otpsService.getOtpByUserId(user.getUserId());
+        if(otp.getVerify() != 0){
+            throw new AccountVerificationException("Your account is already verified");
+        }
         OtpsRequestDTO otps = otpsService.generateOtp();
         Context context = new Context();
         context.setVariable("message", String.valueOf(otps.getOtpsCode()));

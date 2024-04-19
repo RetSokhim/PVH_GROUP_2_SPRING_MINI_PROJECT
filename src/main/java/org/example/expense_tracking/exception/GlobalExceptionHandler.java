@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.net.URI;
-import java.nio.channels.AcceptPendingException;
 import java.nio.file.NoSuchFileException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -127,7 +125,7 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return new ResponseEntity<>("Invalid request body", HttpStatus.BAD_REQUEST);
     }
 
@@ -149,7 +147,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ProblemDetail handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    public ProblemDetail handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
         ProblemDetail problemDetail= ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,"Please check your input and try again");
         problemDetail.setTitle("BAD_REQUEST");
         problemDetail.setProperty("Time Stamp",LocalDateTime.now());
