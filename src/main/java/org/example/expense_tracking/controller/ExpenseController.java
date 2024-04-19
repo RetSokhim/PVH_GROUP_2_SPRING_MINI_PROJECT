@@ -1,5 +1,6 @@
 package org.example.expense_tracking.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.example.expense_tracking.model.dto.response.ApiResponse;
 import org.example.expense_tracking.model.entity.User;
@@ -11,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,8 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("api/v1/expense")
+@SecurityRequirement(name = "bearerAuth")
 public class ExpenseController {
     private final ExpenseService expenseService;
     private final UserService userService;
